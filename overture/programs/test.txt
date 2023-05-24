@@ -1,0 +1,19 @@
+; copy operands
+4
+mov r0 r1
+1
+mov r0 r2
+
+; decrement while r1 != 0
+sub
+mov r3 r1
+4
+jne
+
+; infinite loop
+9
+jmp
+
+; for the reset: jump to beginning
+0
+jmp
