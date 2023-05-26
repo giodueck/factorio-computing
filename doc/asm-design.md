@@ -201,6 +201,11 @@ an immediate value.
 Compares the operands and updates the flags accordingly. The same as `subs` with NIL
 as the destination register.
 
+### NOT
+`not Rd Rn/imm16`\
+`not Rd`\
+Bitwise NOT a value.
+
 ### Jumps
 `jmp Rd/imm16`\
 `j<c> Rd/imm16`
