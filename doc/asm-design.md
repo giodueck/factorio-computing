@@ -105,6 +105,15 @@ As an example:
 @end
 ```
 
+### Includes
+Files containing only `@const`, `@define` and other includes can be included using
+```
+@include "filename"
+```
+
+Macros in included files are defined for the file they are included in. This allows
+for libraries of macros and constants.
+
 ### Repeat
 The repeat macro repeats the instruction block in the macro, which can be more manageable
 than actually copying the same instructions in the code. It is used like
