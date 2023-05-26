@@ -140,64 +140,60 @@ Name | Bit | Description
 `V` is like the carry flag, but all operations are signed anyways so `C` is not needed.
 
 ### Noop
-`noop`
+`noop`\
 No operation. Skip instruction with no effects.
 
 ### Halt
-`halt`
+`halt`\
 Stop clock and halt program execution.
 
 ### Reset
-`reset`
+`reset`\
 Power cycle the computer, clearing volatile memory, registers and the program counter.
 
 ### Move/Copy
-`mov[s] Rd Rn/imm16`
+`mov[s] Rd Rn/imm16`\
 Copy a value into a register.
 
-`Rd` and `Rn` represent `R` registers, `imm16` represents immediates, labels and contants.
+`Rd` and `Rn` represent registers, `imm16` represents immediates, labels and contants.
 
 ### Load
-`ldr[s] Rd Rn/imm16`
+`ldr[s] Rd Rn/imm16`\
 Loads a memory address denoted by `Rn/imm16` into `Rd`.
 
 ### Store
-`str Rv Rn/imm16`
+`str Rv Rn/imm16`\
 Stores the value in `Rv` into the memory address denoted by `Rn/imm16`.
 
 ### Add, Multiply, AND, OR, XOR
-`<op>[s] Rd Rn Rm/imm16`
+`<op>[s] Rd Rn Rm/imm16`\
 `<op>[s] Rd Rm/imm16`
 
-`<op>` can be one of
-`add`
-`mul`
-`and`
-`orr`
+`<op>` can be one of\
+`add`\
+`mul`\
+`and`\
+`orr`\
 `xor`
 
 These operations perform the represented operation on the operands.
 
-`s` can be added to the end of an operation to indicate that it should affect flags.
-
 ### Subtract, Divide, Modulo, Exponentiation, Logical Shift Left, Logical Shift Right
-`<op>[s] Rd Rn Rm/imm16`
-`<op>[s] Rd Rn/imm16 Rm`
+`<op>[s] Rd Rn Rm/imm16`\
+`<op>[s] Rd Rn/imm16 Rm`\
 `<op>[s] Rd Rm/imm16`
 
-`<op>` can be one of
-`sub`
-`div`
-`mod`
-`exp`
-`shl`
+`<op>` can be one of\
+`sub`\
+`div`\
+`mod`\
+`exp`\
+`shl`\
 `shr`
 
 These operations perform the represented operation on the operands. As they are not
 commutative, an additional variant is available in which the first operand can be
 an immediate value.
-
-`s` can be added to the end of an operation to indicate that it should affect flags.
 
 ### Compare
 `cmp Rn Rm/imm16`
@@ -206,18 +202,18 @@ Compares the operands and updates the flags accordingly. The same as `subs` with
 as the destination register.
 
 ### Jumps
-`jmp Rd/imm16`
+`jmp Rd/imm16`\
 `j<c> Rd/imm16`
 
-Where `<c>` can be one of
-`lt` (N != V)
-`gt` (!Z & N = V)
-`le` (Z | N != V)
-`ge` (N = V)
-`eq` (Z)
+Where `<c>` can be one of\
+`lt` (N != V)\
+`gt` (!Z & N = V)\
+`le` (Z | N != V)\
+`ge` (N = V)\
+`eq` (Z)\
 `ne` (!Z)
 
-Jump to the instruction at the address denoted by `Rd/imm16`.
+Jump to the instruction at the address denoted by `Rd/imm16`.\
 `jmp` is an inconditional jump, whereas `<c>` is a condition which checks the flags
 register. In order, they are '<', '>', '<=', '>=', '=', '!=', all signed.
 
