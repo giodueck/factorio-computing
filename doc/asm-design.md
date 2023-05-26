@@ -217,3 +217,29 @@ Jump to the instruction at the address denoted by `Rd/imm16`.\
 `jmp` is an inconditional jump, whereas `<c>` is a condition which checks the flags
 register. In order, they are '<', '>', '<=', '>=', '=', '!=', all signed.
 
+### Push
+`push Rn/imm16`\
+Push a value to the stack. Uses and increments the `SP` register. If the stack is full
+the `SP` register wraps around to the beginning and overwrites the value at that position.
+
+### Pop
+`pop Rd`\
+Pop a value from the stack. Uses and decrements the `SP` register. If the stack is empty
+the `SP` register wraps around on decrement, and an undefined value at that position is
+returned.
+
+### Call
+`call Rd/imm16`\
+Jump to the address denoted by `Rd/imm16` and push the next instruction to the stack.
+
+The registers `R0`-`R3` are free to use inside a call and are the arguments. Additional
+arguments are loaded on the stack. `R4`-`R12` are variable registers and their value
+must be the same on return as on call.
+
+`R0` is also the return value of a call.
+
+### Return
+`return`\
+Return from a subroutine call with the value in `R0`. The address to jump to is the one
+on the top of the stack.
+
