@@ -17,7 +17,7 @@ If the output file is ommitted, the resulting blueprint string is printed on `st
 
 ## To Do
 - [ ] Add Overture blueprint string
-- [ ] Add more compact ROM (6-bit) blueprint
+- [x] Add more compact ROM (6-bit) blueprint
 - [ ] Add features to overture-compiler
   - [ ] named constants
   - [ ] inline comments (maybe)

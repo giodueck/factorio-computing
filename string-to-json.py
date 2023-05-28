@@ -2,6 +2,9 @@ import zlib
 import base64
 import sys
 
+# Usage: python string-to-json.py <import-string.txt>
+# Return: "out.json"
+
 argv = sys.argv
 filename = argv[1]
 with open(filename, "rt") as fd:
