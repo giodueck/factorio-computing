@@ -5,8 +5,9 @@ One sentence per line, no line endings but for the newline character itself.
 
 ## Registers
 There are 13 general-purpose registers named `R0`, `R1`, ..., `R12`.
-`R13` or `SP` is the stack pointer, `R14` or `FR` is the flags register, and `R15` or `PC`
-is the program counter which is only writable by jump instructions.
+`R12` or `FR` is the flags register, `R13` or `SP` is the stack pointer, `R14` or `LR` is
+the link register, and `R15` or `PC` is the program counter which is only writable by jump
+instructions.
 
 `NIL` is a pseudo-register which is defined as `R255` and does not really exist, causing
 reads from it to result in `0` and writes to it to be discarded. This can be used to get
@@ -244,10 +245,11 @@ returned.
 
 ### Call
 `call Rd/imm16`\
-Jump to the address denoted by `Rd/imm16` and push the next instruction to the stack.
+Jump to the address denoted by `Rd/imm16` and store the address of the next instruction
+in the `LR` register.
 
 The registers `R0`-`R3` are free to use inside a call and are the arguments. Additional
-arguments are loaded on the stack. `R4`-`R12` are variable registers and their value
+arguments are loaded on the stack. `R4`-`R11` are variable registers and their value
 must be the same on return as on call.
 
 `R0` is also the return value of a call.
@@ -255,5 +257,5 @@ must be the same on return as on call.
 ### Return
 `return`\
 Return from a subroutine call with the value in `R0`. The address to jump to is the one
-on the top of the stack.
+stored in the `LR` register.
 
