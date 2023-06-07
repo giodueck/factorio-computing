@@ -5,9 +5,8 @@ One sentence per line, no line endings but for the newline character itself.
 
 ## Registers
 There are 13 general-purpose registers named `R0`, `R1`, ..., `R12`.
-`R12` or `FR` is the flags register, `R13` or `SP` is the stack pointer, `R14` or `LR` is
-the link register, and `R15` or `PC` is the program counter which is only writable by jump
-instructions.
+`R13` or `SP` is the stack pointer, `R14` or `LR` is the link register, and `R15` or `PC`
+is the program counter which is only writable by jump instructions.
 
 `NIL` is a pseudo-register which is defined as `R255` and does not really exist, causing
 reads from it to result in `0` and writes to it to be discarded. This can be used to get
@@ -138,6 +137,9 @@ for every repeat. For example:
 ```
 
 ## Instructions
+For all instructions, `Rd`, `Rn` and `Rm` represent registers, `imm8` and `imm16` represent
+8-bit and 16-bit immediates respectively, and labels and contants.
+
 #### The flag register
 The flags register is set by instructions which have the `s` suffix. The flags are
 
@@ -165,8 +167,6 @@ Power cycle the computer, clearing volatile memory, registers and the program co
 `mov[s] Rd Rn/imm16`\
 Copy a value into a register.
 
-`Rd` and `Rn` represent registers, `imm16` represents immediates, labels and contants.
-
 ### Load
 `ldr[s] Rd Rn/imm16`\
 Loads a memory address denoted by `Rn/imm16` into `Rd`.
@@ -176,7 +176,7 @@ Loads a memory address denoted by `Rn/imm16` into `Rd`.
 Stores the value in `Rv` into the memory address denoted by `Rn/imm16`.
 
 ### Add, Multiply, AND, OR, XOR
-`<op>[s] Rd Rn Rm/imm16`\
+`<op>[s] Rd Rn Rm/imm8`\
 `<op>[s] Rd Rm/imm16`
 
 `<op>` can be one of\
@@ -189,8 +189,8 @@ Stores the value in `Rv` into the memory address denoted by `Rn/imm16`.
 These operations perform the represented operation on the operands.
 
 ### Subtract, Divide, Modulo, Exponentiation, Logical Shift Left, Logical Shift Right
-`<op>[s] Rd Rn Rm/imm16`\
-`<op>[s] Rd Rn/imm16 Rm`\
+`<op>[s] Rd Rn Rm/imm8`\
+`<op>[s] Rd Rn/imm8 Rm`\
 `<op>[s] Rd Rm/imm16`
 
 `<op>` can be one of\
