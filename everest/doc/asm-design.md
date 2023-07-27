@@ -205,6 +205,15 @@ These operations perform the represented operation on the operands. As they are 
 commutative, an additional variant is available in which the first operand can be
 an immediate value.
 
+### Increment, Decrement
+`<op>[s] Rn`
+
+`<op>` can be one of\
+`inc`\
+`dec`
+
+These instructions increment or decrement the value in a register.
+
 ### Compare
 `cmp Rn Rm/imm16`
 
@@ -254,8 +263,14 @@ must be the same on return as on call.
 
 `R0` is also the return value of a call.
 
+Might be better implemented as a Macro, as its behavior is the same as
+`add LR PC #1`
+`jmp Rd/imm16`
+
 ### Return
 `return`\
 Return from a subroutine call with the value in `R0`. The address to jump to is the one
 stored in the `LR` register.
 
+Might be better implemented as a macro, as its behavior is the same as
+`jmp LR`
