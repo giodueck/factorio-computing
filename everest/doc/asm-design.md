@@ -167,13 +167,13 @@ Power cycle the computer, clearing volatile memory, registers and the program co
 `mov[s] Rd Rn/imm16`\
 Copy a value into a register.
 
+### Store
+`str Rn Rm/imm16`\
+Stores the value in `Rn` into the memory address denoted by `Rm/imm16`.
+
 ### Load
 `ldr[s] Rd Rn/imm16`\
 Loads a memory address denoted by `Rn/imm16` into `Rd`.
-
-### Store
-`str Rv Rn/imm16`\
-Stores the value in `Rv` into the memory address denoted by `Rn/imm16`.
 
 ### Add, Multiply, AND, OR, XOR
 `<op>[s] Rd Rn Rm/imm8`\
