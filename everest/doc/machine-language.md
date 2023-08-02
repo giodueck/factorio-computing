@@ -35,7 +35,7 @@ R: Result
 - 27: Halt
 - 28: Reset
 - 29-30: Special destination: 0: nothing, 1: SP, 2: LR, 3: PC
-- 31: Special destination bus (0: destination, 1: Load into A)
+- 31: 
 
 ## Instructions
 
@@ -60,10 +60,12 @@ R: Result
 
 5: MOVS REG
 - 10
+- 12
 - 13
 
 6: MOVS IMM16
 - 10
+- 12
 - 18
 
 7: STR REG
@@ -138,6 +140,7 @@ R: Result
 75: JMP IMM16
 - 4-7: 6
 - 9
+- 11
 - 12
 - 18
 - 29-30: 3
@@ -145,6 +148,7 @@ R: Result
 76: JMP REG
 - 4-7: 6
 - 9
+- 11
 - 12
 - 13
 - 29-30: 3
@@ -152,6 +156,7 @@ R: Result
 77-82: J\<C\> IMM16
 - 4-7: 0-5
 - 9
+- 11
 - 12
 - 18
 - 29-30: 3
@@ -159,6 +164,7 @@ R: Result
 83-88: J\<C\> REG
 - 4-7: 0-5
 - 9
+- 11
 - 12
 - 13
 - 29-30: 3
