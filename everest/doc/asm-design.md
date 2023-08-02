@@ -177,7 +177,7 @@ Loads a memory address denoted by `Rn/imm16` into `Rd`.
 
 ### Add, Multiply, AND, OR, XOR
 `<op>[s] Rd Rn Rm/imm8`\
-`<op>[s] Rd Rm/imm16`
+`<op>[s] Rd Rm/imm8`
 
 `<op>` can be one of\
 `add`\
@@ -191,15 +191,15 @@ These operations perform the represented operation on the operands.
 ### Subtract, Divide, Modulo, Exponentiation, Logical Shift Left, Logical Shift Right
 `<op>[s] Rd Rn Rm/imm8`\
 `<op>[s] Rd Rn/imm8 Rm`\
-`<op>[s] Rd Rm/imm16`
+`<op>[s] Rd Rm/imm8`
 
 `<op>` can be one of\
 `sub`\
 `div`\
 `mod`\
 `exp`\
-`shl`\
-`shr`
+`lsh`\
+`rsh`
 
 These operations perform the represented operation on the operands. As they are not
 commutative, an additional variant is available in which the first operand can be
@@ -214,16 +214,17 @@ an immediate value.
 
 These instructions increment or decrement the value in a register.
 
+### NOT
+`not Rd Rn/imm8`\
+`not Rd`\
+Bitwise NOT `Rn/imm8`, or `Rd` if omitted, and store in `Rd`.
+
 ### Compare
-`cmp Rn Rm/imm16`
+`cmp Rn Rm/imm8`
+`cmp Rn/imm8 Rm`
 
 Compares the operands and updates the flags accordingly. The same as `subs` with NIL
 as the destination register.
-
-### NOT
-`not Rd Rn/imm16`\
-`not Rd`\
-Bitwise NOT a value.
 
 ### Jumps
 `jmp Rd/imm16`\
