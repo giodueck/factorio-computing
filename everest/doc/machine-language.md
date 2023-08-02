@@ -51,9 +51,11 @@ R: Result
 - 28
 
 3: MOV REG
+- 12
 - 13
 
 4: MOV IMM16
+- 12
 - 18
 
 5: MOVS REG
