@@ -15,7 +15,7 @@ R: Result
 - 0-3: ALU instruction
 - 4-7: COND instruction
 - 8: Enable ALU
-- 9: Enable COND (writes to PC)
+- 9: Enable COND
 - 10: Save flags
 - 11: NIL result (Result address = 255)
 - 12: Arg1 to result (R = A)
@@ -32,8 +32,8 @@ R: Result
 - 23-24: 0: nothing, 1: increment result, 2: decrement result
 - 25: Push
 - 26: Pop
-- 27: Halt
-- 28: Reset
+- 27: 
+- 28: 
 - 29-30: Special destination: 0: nothing, 1: SP, 2: LR, 3: PC
 - 31: 
 
@@ -42,13 +42,13 @@ R: Result
 - [x] 0: NOOP
 - 11
 
-- [ ] 1: HALT
-- 11
-- 27
+- [x] 1: HALT
+(Not a dedicated instruction, use JMP PC instead)
 
-- [ ] 2: RESET
+- [x] 2: RESET
 - 11
-- 28
+- 29-30: 3
+(Same as JMP IMM16, but ignores arguments which causes the resulting address to be 0)
 
 - [x] 3: MOV REG
 - 12
@@ -137,17 +137,13 @@ R: Result
 - 10
 - Everything else the same
 
-- [ ] 75: JMP IMM16
-- 4-7: 6
-- 9
+- [x] 75: JMP IMM16
 - 11
 - 12
 - 18
 - 29-30: 3
 
 - [x] 76: JMP REG
-- 4-7: 6
-- 9
 - 11
 - 12
 - 13
