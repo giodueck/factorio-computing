@@ -37,6 +37,33 @@ R: Result
 - 29-30: Special destination: 0: nothing, 1: SP, 2: LR, 3: PC
 - 31: 
 
+## ALU Operations
+- 1: add
+- 2: sub
+- 3: mul
+- 4: div
+- 5: mod
+- 6: exp
+- 7: shl
+- 8: shr
+- 9: and
+- 10: or
+- 11: not
+- 12: xor
+
+## COND Operations
+- 1: eq (Z)\
+- 2: ne (!Z)\
+- 3: lt (N != V)\
+- 4: gt (!Z & N = V)\
+- 5: le (Z & N != V)\
+- 6: ge (N = V)\
+- 7: ng (N)\
+- 8: pz (!N)\
+- 9: vs (V)\
+- 10: vc (!V)\
+- 11: al (always)
+
 ## Instructions
 
 - [x] 0: NOOP

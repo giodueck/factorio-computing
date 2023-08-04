@@ -231,16 +231,22 @@ as the destination register.
 `j<c> Rd/imm16`
 
 Where `<c>` can be one of\
+`eq` (Z)\
+`ne` (!Z)\
 `lt` (N != V)\
 `gt` (!Z & N = V)\
-`le` (Z | N != V)\
+`le` (Z & N != V)\
 `ge` (N = V)\
-`eq` (Z)\
-`ne` (!Z)
+`ng` (N)\
+`pz` (!N)\
+`vs` (V)\
+`vc` (!V)\
+`al` (always)
 
 Jump to the instruction at the address denoted by `Rd/imm16`.\
 `jmp` is an inconditional jump, whereas `<c>` is a condition which checks the flags
-register. In order, they are '<', '>', '<=', '>=', '=', '!=', all signed.
+register. In order, they are '=', '!=', '<', '>', '<=', '>=' (all signed), negative,
+positive or zero, overflow, no overflow, and always.
 
 ### Push
 `push Rn/imm16`\
