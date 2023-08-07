@@ -127,19 +127,19 @@ R: Result
 - 13
 - 20
 
-- [ ] 25-30: SUB/DIV/MOD/EXP/LSH/RSH REG REG
+- [x] 25-30: SUB/DIV/MOD/EXP/LSH/RSH REG REG
 - 0-3: corresponding ALU code
 - 8
 - 13
 - 14
 
-- [ ] 31-36: SUB/DIV/MOD/EXP/LSH/RSH REG IMM8
+- [x] 31-36: SUB/DIV/MOD/EXP/LSH/RSH REG IMM8
 - 0-3: corresponding ALU code
 - 8
 - 13
 - 20
 
-- [ ] 37-42: SUB/DIV/MOD/EXP/LSH/RSH IMM8 REG
+- [x] 37-42: SUB/DIV/MOD/EXP/LSH/RSH IMM8 REG
 - 0-3: corresponding ALU code
 - 8
 - 14
