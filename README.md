@@ -16,7 +16,7 @@ If the output file is ommitted, the resulting blueprint string is printed on `st
 `string-to-json.py` is a helper program that takes an input file containing a blueprint string and outputs the JSON representation in `out.json`.
 
 ## To Do
-- [ ] Add Overture blueprint string
+- [x] Add Overture blueprint string
 - [x] Add more compact ROM (6-bit) blueprint
 - [ ] Add features to overture-compiler
   - [ ] named constants
@@ -28,7 +28,7 @@ If the output file is ommitted, the resulting blueprint string is printed on `st
     - Constant declarations
     - Macros (condense several instructions into 1 command)
     - Standalone and inline comments
-- [ ] Add larger compact ROM blueprints
+- [x] Add larger compact ROM blueprints
 - [ ] Universal compiler tool
   - Option, magic number or file extension based architecture detection
 
