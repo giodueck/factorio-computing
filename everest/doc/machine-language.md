@@ -150,15 +150,15 @@ R: Result
 - 13
 - 23-24: 1-2
 
-- [ ] 45: NOT REG
-- 0-3: 11
+- [x] 45: NOT REG
+- 0-3: 10
 - 8
 - 13
 
-- [ ] 46: NOT IMM8
-- 0-3: 11
+- [x] 46: NOT IMM16
+- 0-3: 10
 - 8
-- 19
+- 18
 
 - [ ] 47-74: Arithmetic and bitwise with flags (CMP = SUBS with NIL result)
 - 10
