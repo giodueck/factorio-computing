@@ -151,17 +151,21 @@ Name | Bit | Description
 
 `V` is like the carry flag, but all operations are signed anyways so `C` is not needed.
 
+In Factorio, memory registers can hold several signals at once, meaning the signals can be
+held in 3 different signals, saving several bitwise operations when using and storing them.
+
 ### Noop
 `noop`\
-No operation. Skip instruction with no effects.
+No operation. Executing has no effects on registers or memory.
 
 ### Halt
 `halt`\
-Stop clock and halt program execution.
+Halt program execution by jumping to the same instruction, creating an infinite loop.
 
 ### Reset
 `reset`\
-Power cycle the computer, clearing volatile memory, registers and the program counter.
+Reset the program counter, registers and memory are kept the same since turning off power
+does not clear the contents of RW memory cells.
 
 ### Move/Copy
 `mov[s] Rd Rn/imm16`\

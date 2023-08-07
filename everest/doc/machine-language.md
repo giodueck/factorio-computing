@@ -12,57 +12,57 @@ B: Like A, but for arg2
 R: Result
 
 ## Microcode bits
-- 0-3: ALU instruction
-- 4-7: COND instruction
-- 8: Enable ALU
-- 9: Enable COND
-- 10: Save flags
-- 11: NIL result (Result address = 255)
-- 12: Arg1 to result (R = A)
-- 13: Load register arg1
-- 14: Load register arg2
-- 15: Store in RAM  (Address from A)
-- 16: Load from RAM (Address from A)
-- 17: Arg2 to result (R = B)
-- 18: Imm16 from arg1 and arg2 (Loaded onto A)
-- 19: Imm8 from arg1 (Loaded onto A)
-- 20: Imm8 from arg2 (Loaded onto B)
-- 21: Imm16 from dest and arg1 (Loaded onto A, arg2 becomes the only argument)
-- 22: 
-- 23-24: 0: nothing, 1: increment result, 2: decrement result
-- 25: Push
-- 26: Pop
-- 27: 
-- 28: 
-- 29-30: Special destination: 0: nothing, 1: SP, 2: LR, 3: PC
-- 31: 
+- [x] 0-3: ALU instruction
+- [ ] 4-7: COND instruction
+- [x] 8: Enable ALU
+- [ ] 9: Enable COND
+- [x] 10: Save flags
+- [x] 11: NIL result (Result address = 255)
+- [x] 12: Arg1 to result (R = A)
+- [x] 13: Load register arg1
+- [x] 14: Load register arg2
+- [ ] 15: Store in RAM  (Address from A)
+- [ ] 16: Load from RAM (Address from A)
+- [ ] 17: Arg2 to result (R = B)
+- [x] 18: Imm16 from arg1 and arg2 (Loaded onto A)
+- [x] 19: Imm8 from arg1 (Loaded onto A)
+- [x] 20: Imm8 from arg2 (Loaded onto B)
+- [ ] 21: Imm16 from dest and arg1 (Loaded onto A, arg2 becomes the only argument)
+- [ ] 22: 
+- [ ] 23-24: 0: nothing, 1: increment result, 2: decrement result
+- [ ] 25: Push
+- [ ] 26: Pop
+- [ ] 27: 
+- [ ] 28: 
+- [x] 29-30: Special destination: 0: nothing, 1: SP, 2: LR, 3: PC
+- [ ] 31: 
 
 ## ALU Operations
-- 1: add
-- 2: sub
-- 3: mul
-- 4: div
-- 5: mod
-- 6: exp
-- 7: shl
-- 8: shr
-- 9: and
-- 10: or
-- 11: not
-- 12: xor
+- 0: add
+- 1: sub
+- 2: mul
+- 3: div
+- 4: mod
+- 5: exp
+- 6: shl
+- 7: shr
+- 8: and
+- 9: or
+- 10: not
+- 11: xor
 
 ## COND Operations
-- 1: eq (Z)\
-- 2: ne (!Z)\
-- 3: lt (N != V)\
-- 4: gt (!Z & N = V)\
-- 5: le (Z & N != V)\
-- 6: ge (N = V)\
-- 7: ng (N)\
-- 8: pz (!N)\
-- 9: vs (V)\
-- 10: vc (!V)\
-- 11: al (always)
+- 0: eq (Z)
+- 1: ne (!Z)
+- 2: lt (N != V)
+- 3: gt (!Z & N = V)
+- 4: le (Z & N != V)
+- 5: ge (N = V)
+- 6: ng (N)
+- 7: pz (!N)
+- 8: vs (V)
+- 9: vc (!V)
+- 10: al (always)
 
 ## Instructions
 
@@ -115,32 +115,32 @@ R: Result
 - 10
 - Everything else the same
 
-- [ ] 15-19: ADD/MUL/AND/OR/XOR REG REG
-- 0-3: 0-4
+- [x] 15-19: ADD/MUL/AND/OR/XOR REG REG
+- 0-3: corresponding ALU code
 - 8
 - 13
 - 14
 
-- [ ] 20-24: ADD/MUL/AND/OR/XOR REG IMM8
-- 0-3: 0-4
+- [x] 20-24: ADD/MUL/AND/OR/XOR REG IMM8
+- 0-3: corresponding ALU code
 - 8
 - 13
 - 20
 
 - [ ] 25-30: SUB/DIV/MOD/EXP/LSH/RSH REG REG
-- 0-3: 5-10
+- 0-3: corresponding ALU code
 - 8
 - 13
 - 14
 
 - [ ] 31-36: SUB/DIV/MOD/EXP/LSH/RSH REG IMM8
-- 0-3: 5-10
+- 0-3: corresponding ALU code
 - 8
 - 13
 - 20
 
 - [ ] 37-42: SUB/DIV/MOD/EXP/LSH/RSH IMM8 REG
-- 0-3: 5-10
+- 0-3: corresponding ALU code
 - 8
 - 14
 - 19
