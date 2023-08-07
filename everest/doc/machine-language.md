@@ -29,7 +29,7 @@ R: Result
 - [x] 20: Imm8 from arg2 (Loaded onto B)
 - [ ] 21: Imm16 from dest and arg1 (Loaded onto A, arg2 becomes the only argument)
 - [ ] 22: 
-- [ ] 23-24: 0: nothing, 1: increment result, 2: decrement result
+- [ ] 23-24: 
 - [ ] 25: Push
 - [ ] 26: Pop
 - [ ] 27: 
@@ -85,12 +85,12 @@ R: Result
 - 12
 - 18
 
-- [ ] 5: MOVS REG
+- [x] 5: MOVS REG
 - 10
 - 12
 - 13
 
-- [ ] 6: MOVS IMM16
+- [x] 6: MOVS IMM16
 - 10
 - 12
 - 18
@@ -145,22 +145,29 @@ R: Result
 - 14
 - 19
 
-- [ ] 43-44: INC/DEC REG
-- 12
-- 13
-- 23-24: 1-2
-
-- [x] 45: NOT REG
+- [x] 43: NOT REG
 - 0-3: 10
 - 8
 - 13
 
-- [x] 46: NOT IMM16
+- [x] 44: NOT IMM16
 - 0-3: 10
 - 8
 - 18
 
-- [ ] 47-74: Arithmetic and bitwise with flags (CMP = SUBS with NIL result)
+- [x] 45: NOTS REG
+- 0-3: 10
+- 8
+- 10
+- 13
+
+- [x] 46: NOTS IMM16
+- 0-3: 10
+- 8
+- 10
+- 18
+
+- [x] 47-74: Arithmetic and bitwise with flags (CMP = SUBS with NIL result)
 - 10
 - Everything else the same
 
