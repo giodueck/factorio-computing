@@ -13,9 +13,9 @@ R: Result
 
 ## Microcode bits
 - [x] 0-3: ALU instruction
-- [ ] 4-7: COND instruction
+- [x] 4-7: COND instruction
 - [x] 8: Enable ALU
-- [ ] 9: Enable COND
+- [x] 9: Enable COND
 - [x] 10: Save flags
 - [x] 11: NIL result (Result address = 255)
 - [x] 12: Arg1 to result (R = A)
@@ -73,6 +73,8 @@ R: Result
 (Not a dedicated instruction, use JMP PC instead)
 
 - [x] 2: RESET
+- 4-7: 10
+- 9
 - 11
 - 29-30: 3
 (Same as JMP IMM16, but ignores arguments which causes the resulting address to be 0)
@@ -172,42 +174,50 @@ R: Result
 - Everything else the same
 
 - [x] 75: JMP IMM16
+- 4-7: 10
+- 9
 - 11
 - 12
 - 18
 - 29-30: 3
 
 - [x] 76: JMP REG
-- 11
-- 12
-- 13
-- 29-30: 3
-
-- [ ] 77-82: J\<C\> IMM16
-- 4-7: 0-5
-- 9
-- 11
-- 12
-- 18
-- 29-30: 3
-
-- [ ] 83-88: J\<C\> REG
-- 4-7: 0-5
+- 4-7: 10
 - 9
 - 11
 - 12
 - 13
 - 29-30: 3
 
-- [ ] 89: PUSH REG
+- [x] 77-86: J\<C\> IMM16
+- 4-7: 0-9
+- 9
+- 11
+- 12
+- 18
+- 29-30: 3
+
+- [x] 87-96: J\<C\> REG
+- 4-7: 0-9
+- 9
+- 11
+- 12
+- 13
+- 29-30: 3
+
+- [ ] 97: PUSH REG
 - 12
 - 13
 - 25
 
-- [ ] 90: PUSH IMM16
+- [ ] 98: PUSH IMM16
 - 12
 - 18
 - 25
 
-- [ ] 91: POP REG
+- [ ] 99: POP REG
+- 26
+
+- [ ] 100: POPS REG
+- 10
 - 26
