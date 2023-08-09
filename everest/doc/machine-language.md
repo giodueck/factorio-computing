@@ -97,26 +97,26 @@ R: Result
 - 12
 - 18
 
-- [x] 7: STR REG
+- [x] 7: STR REG\
   Store register (arg2) in address in register (arg1)
 - 11
 - 13
 - 14
 - 15
 
-- [x] 8: STR IMM16
+- [x] 8: STR IMM16\
   Store register (arg2) in immediate address (dest << 8 | arg1)
 - 11
 - 14
 - 15
 - 21
 
-- [x] 9: LDR REG
+- [x] 9: LDR REG\
   Load register (dest) from address in register (arg1)
 - 13
 - 16
 
-- [x] 10: LDR IMM16
+- [x] 10: LDR IMM16\
   Load register (dest) from immediate address (arg1 << 8 | arg2)
 - 16
 - 18
