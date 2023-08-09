@@ -19,15 +19,15 @@ R: Result
 - [x] 10: Save flags
 - [x] 11: NIL result (Result address = 255)
 - [x] 12: Arg1 to result (R = A)
-- [x] 13: Load register arg1
-- [x] 14: Load register arg2
-- [ ] 15: Store in RAM  (Address from A)
-- [ ] 16: Load from RAM (Address from A)
+- [x] 13: Load register arg1 (Loaded onto A)
+- [x] 14: Load register arg2 (Loaded onto B)
+- [x] 15: Store in RAM  (Address from A, value from B)
+- [x] 16: Load from RAM (Address from A, value onto R)
 - [ ] 17: Arg2 to result (R = B)
 - [x] 18: Imm16 from arg1 and arg2 (Loaded onto A)
 - [x] 19: Imm8 from arg1 (Loaded onto A)
 - [x] 20: Imm8 from arg2 (Loaded onto B)
-- [ ] 21: Imm16 from dest and arg1 (Loaded onto A, arg2 becomes the only argument)
+- [x] 21: Imm16 from dest and arg1 (Loaded onto A, arg2 becomes the only argument)
 - [ ] 22: 
 - [ ] 23-24: 
 - [ ] 25: Push
@@ -97,23 +97,31 @@ R: Result
 - 12
 - 18
 
-- [ ] 7: STR REG
+- [x] 7: STR REG
+  Store register (arg2) in address in register (arg1)
+- 11
 - 13
+- 14
 - 15
 
-- [ ] 8: STR IMM16
+- [x] 8: STR IMM16
+  Store register (arg2) in immediate address (dest << 8 | arg1)
+- 11
+- 14
 - 15
-- 18
+- 21
 
-- [ ] 9: LDR REG
+- [x] 9: LDR REG
+  Load register (dest) from address in register (arg1)
 - 13
 - 16
 
-- [ ] 10: LDR IMM16
+- [x] 10: LDR IMM16
+  Load register (dest) from immediate address (arg1 << 8 | arg2)
 - 16
 - 18
 
-- [ ] 11-14: STRS/LDRS
+- [x] 11-12: LDRS
 - 10
 - Everything else the same
 
