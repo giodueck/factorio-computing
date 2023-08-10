@@ -15,23 +15,6 @@ If the output file is ommitted, the resulting blueprint string is printed on `st
 
 `string-to-json.py` is a helper program that takes an input file containing a blueprint string and outputs the JSON representation in `out.json`.
 
-## To Do
-- [x] Add Overture blueprint string
-- [x] Add more compact ROM (6-bit) blueprint
-- [ ] Add features to overture-compiler
-  - [ ] named constants
-  - [ ] inline comments (maybe)
-- [ ] Implement and add more powerful architectures
-  - Features needed for compilers
-    - Assembly translation
-    - Label translation
-    - Constant declarations
-    - Macros (condense several instructions into 1 command)
-    - Standalone and inline comments
-- [x] Add larger compact ROM blueprints
-- [ ] Universal compiler tool
-  - Option, magic number or file extension based architecture detection
-
 # Architectures
 ## Overture
 8-bit ISA based on the "tutorial" architecture featured in the game "Turing Complete". The ALU operations have been replaced to suit Factorio better, but all other characteristics remain mostly the same.
