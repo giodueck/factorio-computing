@@ -38,7 +38,7 @@ If the output file is ommitted, the resulting blueprint string is printed on `st
 
 [This Steam guide](https://steamcommunity.com/sharedfiles/filedetails/?id=2782647016) contains a fairly complete overview of the ISA.
 
-This implementation differes in the calculate section, where the operations are instead (in the order presented):
+This implementation differs in the calculate section, where the operations are instead (in the order presented):
 - ADD
 - SUB
 - MUL

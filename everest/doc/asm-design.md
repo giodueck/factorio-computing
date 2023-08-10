@@ -263,6 +263,10 @@ Pop a value from the stack. Uses and decrements the `SP` register. If the stack 
 the `SP` register wraps around on decrement, and an undefined value at that position is
 returned.
 
+### Clear SP
+`clsp`\
+Clears the SP register to 0.
+
 ### Call
 `call Rd/imm16`\
 Jump to the address denoted by `Rd/imm16` and store the address of the next instruction

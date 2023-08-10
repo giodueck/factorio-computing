@@ -30,11 +30,11 @@ R: Result
 - [x] 21: Imm16 from dest and arg1 (Loaded onto A, arg2 becomes the only argument)
 - [ ] 22: 
 - [ ] 23-24: 
-- [ ] 25: Push
-- [ ] 26: Pop
-- [ ] 27: 
+- [x] 25: Push (Value from A)
+- [ ] 26: Pop  (Value onto R)
+- [ ] 27: Clear SP
 - [ ] 28: 
-- [x] 29-30: Special destination: 0: nothing, 1: SP, 2: LR, 3: PC
+- [x] 29-30: Special destination: 0: nothing, 1: nothing, 2: LR, 3: PC
 - [ ] 31: 
 
 ## ALU Operations
@@ -63,6 +63,16 @@ R: Result
 - 8: vs (V)
 - 9: vc (!V)
 - 10: al (always)
+
+## Stack
+
+The stack is 512 cells wide, and SP always points to the first empty address
+on the top of the stack.
+
+The stack is held in an independent block of memory inaccessible by load/store
+instructions.
+
+Bit 27 of the Microcode controls clearing the SP, effectively clearing the stack.
 
 ## Instructions
 
@@ -213,19 +223,25 @@ R: Result
 - 13
 - 29-30: 3
 
-- [ ] 97: PUSH REG
+- [x] 97: PUSH REG
+- 11
 - 12
 - 13
 - 25
 
-- [ ] 98: PUSH IMM16
+- [x] 98: PUSH IMM16
+- 11
 - 12
 - 18
 - 25
 
-- [ ] 99: POP REG
+- [x] 99: POP REG
 - 26
 
-- [ ] 100: POPS REG
+- [x] 100: POPS REG
 - 10
 - 26
+
+- [x] 101: CLSP
+- 11
+- 27
