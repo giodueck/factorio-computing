@@ -1,0 +1,20 @@
+.macro
+@const f1 #1
+
+.program
+start:
+    MOV R0 #0   ; zeroeth fib number
+    MOV R1, #1   ; first fib number
+; Line comment
+
+
+    loop:
+        ADD R2 R0 R1
+        MOV R0 R1
+        MOV R1 R2
+        CALL subroutine
+        JMP loop
+
+subroutine:
+    NOOP
+    RETURN

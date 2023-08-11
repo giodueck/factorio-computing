@@ -18,9 +18,7 @@ Directly translated to machine code. Has an exact or differently named equivalen
 in machine code.
 
 - NOOP
-- HALT
 - RESET
-- MOV
 - MOV/S
 - STR
 - LDR/S
@@ -35,8 +33,6 @@ in machine code.
 - EXP/S
 - LSH/S
 - RSH/S
-- INC/S
-- DEC/S
 - NOT/S
 - CMP
 - JMP
@@ -48,6 +44,9 @@ in machine code.
 ### Built-in macros
 Translated to one or more instructions, with no direct machine code equivalent.
 
+- HALT
+- INC/S
+- DEC/S
 - CALL
 - RETURN
 
@@ -76,14 +75,14 @@ section becomes a jump to this label.
 
 ## Passes
 ### First
-- [ ] Delete `;` comments
-- [ ] Replace `,` with space
+- [x] Delete `;` comments
+- [x] Replace `,` with space
+- [x] Split lines into list of operands
 - [ ] Process and remove preprocessor commands like `@rep ... @end`
-- [ ] Create label symbol table with line number
-- [ ] Split lines into list of operands
+- [x] Create label symbol table with line number
 - [ ] Replace mnemonics with opcodes
 - [ ] Replace constants with values
-- [ ] Report syntax errors
+- [x] Report syntax errors
 - [ ] Convert literals into numbers, report value errors
 - [ ] Convert operands into values
 
