@@ -4,7 +4,7 @@
 .program
 start:
     MOV R0 #0   ; zeroeth fib number
-    MOV R1, #1   ; first fib number
+    MOV R1, f1   ; first fib number
 ; Line comment
 
 
@@ -18,3 +18,5 @@ start:
 subroutine:
     NOOP
     RETURN
+
+finish:

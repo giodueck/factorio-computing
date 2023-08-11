@@ -109,7 +109,7 @@ sections = [
 lines = []
 lineinfo = []
 lineaddr = []
-labels = { 'START': 0 }
+labels = {}
 consts = {}
 errors = 0
 program_reached = 0
@@ -122,7 +122,7 @@ def syntax_error(msg: str, i: int):
     global errors; errors += 1
 
 def lexical_error(msg: str, i: int):
-    print(f'Lexical error on line {i}: {msg}')
+    print(f'Unknown token on line {i}: {msg}')
     global errors; errors += 1
     
 def instr_to_machine_code(c: list):
@@ -184,33 +184,28 @@ if __name__ == '__main__':
     # Identify tokens and translate
     errors = 0
     for i, c in enumerate(code):
-        if c[0] in opcodes:
-            if curr_section != 0:
-                syntax_error('instruction not allowed outside ".PROGRAM" section', lineinfo[i])
-                continue
-            machine_code.append(instr_to_machine_code(c))
-            program_reached = 1
-        elif c[0] in builtin_macros:
-            if curr_section != 0:
-                syntax_error('instruction not allowed outside ".PROGRAM" section', lineinfo[i])
-                continue
-            new_code = macro_to_instr(c)
-            for d in new_code:
-                machine_code.append(instr_to_machine_code(d))
-            program_reached = 1
-        elif c[0][0] == '@' and c[0][1:] in preprocessor:
+        
+        # Preprocessor directives
+        if c[0][0] == '@' and c[0][1:] in preprocessor:
             if curr_section != 1:
-                syntax_error('preprocessor commands not allowed outside ".MACRO" section', lineinfo[i])
+                syntax_error('preprocessor directives not allowed outside ".MACRO" section', lineinfo[i])
                 continue
             if c[0] == '@CONST':
                 if len(c) != 3:
                     syntax_error(f'"{c[0]}" must be followed by an identifier and a value', lineinfo[i])
                     continue
                 else:
+                    if c[1] in opcodes or c[1] in builtin_macros or c[1] in preprocessor or c[1] in sections:
+                        syntax_error(f'"{c[0]}" name may not be a reserved word', lineinfo[i])
+                        continue
+                    elif c[1] in consts:
+                        syntax_error(f'"{c[0]}" "{c[1]}" defined multiple times', lineinfo[i])
                     consts[c[1]] = c[2]
             elif c[0][1:] in ['DEFINE', 'INCLUDE', 'REP', 'END']:
                 syntax_error(f'"{c[0]}" is reserved but has not been implemented', lineinfo[i])
                 continue
+            
+        # Sections
         elif c[0][0] == '.' and c[0][1:] in sections:
             if program_reached:
                 syntax_error('sections cannot be declared after ".PROGRAM" section begins', lineinfo[i])
@@ -224,30 +219,65 @@ if __name__ == '__main__':
                 curr_section = 2
                 syntax_error(f'"{c[0]}" has not been implemented', lineinfo[i])
                 continue
-        elif c[0][-1] == ':' or c[1] == ':':
+        
+        # Labels
+        elif c[0][-1] == ':' or len(c) > 1 and c[1] == ':':
+            l = c[0].strip(':')
+            if l in opcodes or l in builtin_macros or l in preprocessor or l in sections:
+                syntax_error(f'label may not be a reserved word', lineinfo[i])
+                continue
+            elif l in consts:
+                syntax_error(f'"{l}" was already defined as a "@CONST"', lineinfo[i])
+                continue
+            elif l in labels:
+                syntax_error(f'"{l}" defined multiple times', lineinfo[i])
+                continue
+            
             if code[-1] != c:
-                labels[c[0].strip(':')] = lineinfo[i+1]
+                labels[l] = lineinfo[i + 1]
             else:
-                labels[c[0].strip(':')] = lineinfo[i]+1
+                # On an empty label at the end of the file add a noop to jump to
+                labels[l] = lineinfo[i] + 1
+                machine_code.append(['NOOP'])
+        
+        # Instructions
+        elif c[0] in opcodes:
+            if curr_section != 0:
+                syntax_error('instruction not allowed outside ".PROGRAM" section', lineinfo[i])
+                continue
+            machine_code.append(instr_to_machine_code(c))
+            program_reached = 1
+        
+        # Built-in macro instructions
+        elif c[0] in builtin_macros:
+            if curr_section != 0:
+                syntax_error('instruction not allowed outside ".PROGRAM" section', lineinfo[i])
+                continue
+            new_code = macro_to_instr(c)
+            for d in new_code:
+                machine_code.append(instr_to_machine_code(d))
+            program_reached = 1
+            
+        # Everything not picked up is a lexical error
         else:
-            lexical_error(f'unrecognized token: "{c[0]}"', lineinfo[i])
+            lexical_error(c[0], lineinfo[i])
     
     for c in machine_code:
         print(c)
     print(labels)
     print(consts)
     
+    ## Second pass
+    
+    
+    ## Third pass
+    
+    ## Output
     if errors:
         print(f'{errors} error{"s" if errors > 1 else ""} detected')
         exit(0)
-    
-    ## Second pass
     exit(0)
     
-    ## Third pass
-    exit(0)
-    
-    ## Output
     bp = generate_bp(machine_code, sys.argv[2])
     
     if len(sys.argv) == 4:

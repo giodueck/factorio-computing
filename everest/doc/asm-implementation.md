@@ -78,18 +78,19 @@ section becomes a jump to this label.
 - [x] Delete `;` comments
 - [x] Replace `,` with space
 - [x] Split lines into list of operands
-- [ ] Process and remove preprocessor commands like `@rep ... @end`
+- [-] Process and remove preprocessor directives like `@rep ... @end`
 - [x] Create label symbol table with line number
-- [ ] Replace mnemonics with opcodes
-- [ ] Replace constants with values
 - [x] Report syntax errors
-- [ ] Convert literals into numbers, report value errors
-- [ ] Convert operands into values
 
 ### Second
-- [ ] Generate start jump instruction if start is present
+- [ ] Generate start jump instruction if start label is present
 - [ ] Generate data section instructions
+- [ ] Replace constants with values
 - [ ] Replace label line numbers with addresses
+- [ ] Convert literals into numbers, report value errors
+- [ ] Convert operands into values
+- [ ] Syntax analysis on instructions and operands
+- [ ] Replace mnemonics with opcodes
 
 ### Third
 - [ ] Replace labels with corresponding addresses
