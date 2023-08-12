@@ -106,6 +106,25 @@ sections = [
     'PROGRAM'
 ]
 
+registers = {
+    'R0': 0,
+    'R1': 1,
+    'R2': 2,
+    'R3': 3,
+    'R4': 4,
+    'R5': 5,
+    'R6': 6,
+    'R7': 7,
+    'R8': 8,
+    'R9': 9,
+    'R10': 10,
+    'R11': 11,
+    'R12': 12,
+    'SP': 13,
+    'LR': 14,
+    'PC': 15
+}
+
 lines = []
 lineinfo = []
 lineaddr = []
@@ -173,6 +192,9 @@ def interpret_instr(c: list, i: int):
         for d in new_code:
             machine_code.append(instr_to_machine_code(d))
 
+    else:
+        syntax_error(f'unkown instruction "{c[0]}"')
+
 def repeat_block(c: list, i: int):
     if len(c) < 2:
         syntax_error(f'"{c[0]}" must be followed by a non-negative integer', lineinfo[i])
@@ -234,9 +256,6 @@ def repeat_block(c: list, i: int):
         # This error will be detected while parsing the rest of the code inside the first pass
         return
     
-    print(r)
-    print(counters)
-    print()
     for j in range(n):
         ri = [e.copy() for e in r]
         for k, rk in enumerate(r):
@@ -306,14 +325,14 @@ if __name__ == '__main__':
                 continue
             
             if curr_section != 1:
-                syntax_error('preprocessor directives not allowed outside ".MACRO" section', lineinfo[i])
+                syntax_error('preprocessor directives not allowed outside ".MACRO" section, except "@REP"', lineinfo[i])
                 continue
             if c[0] == '@CONST':
                 if len(c) != 3:
                     syntax_error(f'"{c[0]}" must be followed by an identifier and a value', lineinfo[i])
                     continue
                 else:
-                    if c[1] in opcodes or c[1] in builtin_macros or c[1] in preprocessor or c[1] in sections:
+                    if c[1] in opcodes or c[1] in builtin_macros or c[1] in preprocessor or c[1] in sections or c[1] in registers:
                         syntax_error(f'"{c[0]}" name may not be a reserved word', lineinfo[i])
                         continue
                     elif c[1] in consts:
@@ -321,6 +340,9 @@ if __name__ == '__main__':
                     consts[c[1]] = c[2]
             elif c[0][1:] in ['DEFINE', 'INCLUDE']:
                 syntax_error(f'"{c[0]}" is reserved but has not been implemented', lineinfo[i])
+                continue
+            else:
+                syntax_error(f'unkown preprocessor directive "{c[0]}"')
                 continue
             
         # Sections
@@ -337,11 +359,14 @@ if __name__ == '__main__':
                 curr_section = 2
                 syntax_error(f'"{c[0]}" has not been implemented', lineinfo[i])
                 continue
+            else:
+                syntax_error(f'unkown section "{c[0]}"')
+                continue
         
         # Labels
         elif c[0][-1] == ':' or len(c) > 1 and c[1] == ':':
             l = c[0].strip(':')
-            if l in opcodes or l in builtin_macros or l in preprocessor or l in sections:
+            if l in opcodes or l in builtin_macros or l in preprocessor or l in sections or l in registers:
                 syntax_error(f'label may not be a reserved word', lineinfo[i])
                 continue
             elif l in consts:
@@ -351,12 +376,7 @@ if __name__ == '__main__':
                 syntax_error(f'"{l}" defined multiple times', lineinfo[i])
                 continue
             
-            if code[-1] != c:
-                labels[l] = lineinfo[i + 1]
-            else:
-                # On an empty label at the end of the file add a noop to jump to
-                labels[l] = lineinfo[i] + 1
-                machine_code.append(['NOOP'])
+            labels[l] = len(machine_code)
         
         # Instructions and Built-in macros
         elif c[0] in opcodes or c[0] in builtin_macros:
@@ -372,6 +392,7 @@ if __name__ == '__main__':
     
     for c in machine_code:
         print(c)
+    print()
     print(labels)
     print(consts)
     
