@@ -114,6 +114,9 @@ consts = {}
 errors = 0
 program_reached = 0
 curr_section = 0
+repeat = 0
+repeat_line = 0
+code = []
 machine_code = []
 
 
@@ -153,6 +156,103 @@ def macro_to_instr(c: list):
     
     return out
 
+def interpret_instr(c: list, i: int):
+    # Instructions
+    if c[0] in opcodes:
+        if curr_section != 0:
+            syntax_error('instruction not allowed outside ".PROGRAM" section', lineinfo[i])
+            return
+        machine_code.append(instr_to_machine_code(c))
+    
+    # Built-in macro instructions
+    elif c[0] in builtin_macros:
+        if curr_section != 0:
+            syntax_error('instruction not allowed outside ".PROGRAM" section', lineinfo[i])
+            return
+        new_code = macro_to_instr(c)
+        for d in new_code:
+            machine_code.append(instr_to_machine_code(d))
+
+def repeat_block(c: list, i: int):
+    if len(c) < 2:
+        syntax_error(f'"{c[0]}" must be followed by a non-negative integer', lineinfo[i])
+        return
+    if len(c) > 2:
+        syntax_error(f'"{c[0]}" takes only one non-negative integer as an argument', lineinfo[i])
+        return
+    
+    try:
+        n = int(c[1])
+        if n < 0:
+            raise ValueError
+    except:
+        syntax_error(f'"{c[0]}" must be followed by a non-negative integer', lineinfo[i])
+        return
+    
+    # Get code until END is found
+    r = []
+    ended = 0
+    counters = []
+    for j in range(i + 1, len(code)):
+        if code[j][0] == '@END':
+            ended = 1
+            break
+        
+        # @{s, i} blocks are counters: s=start value, i=increment value
+        len_counters = -1
+        while len_counters < len(counters):
+            len_counters = len(counters)
+            
+            for k, a in enumerate(code[j]):
+                k_ = 0
+                s_, i_ = 0, 0
+                if a.startswith('@{'):
+                    if len(a) > 2:
+                        s_ = int(a[2:])
+                    else:
+                        k_ += 1
+                        s_ = int(code[j][k + k_])
+                    k_ += 1
+                
+                    if code[j][k + k_].endswith('}'):
+                        i_ = int(code[j][k + k_][:-1])
+                    else:
+                        i_ = int(code[j][k + k_])
+                        k_ += 1
+                    
+                    counters.append((s_, i_))
+            
+                    # remove counter block and replace with string format ('{i}') placeholder
+                    while k_ >= 0:
+                        code[j].pop(k + k_)
+                        k_ -= 1
+                    code[j].insert(k, f'({len(counters) - 1})')
+
+        r.append(code[j])
+        
+    if not ended:
+        # This error will be detected while parsing the rest of the code inside the first pass
+        return
+    
+    print(r)
+    print(counters)
+    print()
+    for j in range(n):
+        ri = [e.copy() for e in r]
+        for k, rk in enumerate(r):
+            for l, a in enumerate(rk):
+                if a.startswith('(') and a.endswith(')'):
+                    index = int(a[1:-1])
+                    ri[k][l] = '#' + str(counters[index][0])
+                    updated_ctr = (counters[index][0] + counters[index][1], counters[index][1])
+                    counters.pop(index)
+                    counters.insert(index, updated_ctr)
+
+        for k, rk in enumerate(ri):
+            interpret_instr(rk, k)
+
+    return
+
 if __name__ == '__main__':
     # arg 0 = program name
     # arg 1 = input
@@ -185,8 +285,26 @@ if __name__ == '__main__':
     errors = 0
     for i, c in enumerate(code):
         
+        # REP..END blocks are interpreted when REP is found, discard instructions until END is found
+        if repeat:
+            if c[0] == '@END':
+                repeat = 0
+            continue
+        
         # Preprocessor directives
         if c[0][0] == '@' and c[0][1:] in preprocessor:
+            if c[0] == '@REP':
+                repeat = 1
+                repeat_line = lineinfo[i]
+                if curr_section != 0:
+                    syntax_error(f'"{c[0]}" only allowed in ".PROGRAM" section', lineinfo[i])
+                    continue
+                repeat_block(c, i)
+                continue
+            elif c[0] == '@END':
+                syntax_error(f'"{c[0]}" without a corresponding "@REP"', lineinfo[i])
+                continue
+            
             if curr_section != 1:
                 syntax_error('preprocessor directives not allowed outside ".MACRO" section', lineinfo[i])
                 continue
@@ -201,7 +319,7 @@ if __name__ == '__main__':
                     elif c[1] in consts:
                         syntax_error(f'"{c[0]}" "{c[1]}" defined multiple times', lineinfo[i])
                     consts[c[1]] = c[2]
-            elif c[0][1:] in ['DEFINE', 'INCLUDE', 'REP', 'END']:
+            elif c[0][1:] in ['DEFINE', 'INCLUDE']:
                 syntax_error(f'"{c[0]}" is reserved but has not been implemented', lineinfo[i])
                 continue
             
@@ -240,27 +358,17 @@ if __name__ == '__main__':
                 labels[l] = lineinfo[i] + 1
                 machine_code.append(['NOOP'])
         
-        # Instructions
-        elif c[0] in opcodes:
-            if curr_section != 0:
-                syntax_error('instruction not allowed outside ".PROGRAM" section', lineinfo[i])
-                continue
-            machine_code.append(instr_to_machine_code(c))
-            program_reached = 1
-        
-        # Built-in macro instructions
-        elif c[0] in builtin_macros:
-            if curr_section != 0:
-                syntax_error('instruction not allowed outside ".PROGRAM" section', lineinfo[i])
-                continue
-            new_code = macro_to_instr(c)
-            for d in new_code:
-                machine_code.append(instr_to_machine_code(d))
+        # Instructions and Built-in macros
+        elif c[0] in opcodes or c[0] in builtin_macros:
+            interpret_instr(c, i)
             program_reached = 1
             
         # Everything not picked up is a lexical error
         else:
             lexical_error(c[0], lineinfo[i])
+    
+    if repeat:
+        syntax_error('"@REP" without a corresponding "@END"', repeat_line)
     
     for c in machine_code:
         print(c)
