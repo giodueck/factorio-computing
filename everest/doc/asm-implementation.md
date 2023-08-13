@@ -78,22 +78,22 @@ section becomes a jump to this label.
 - [x] Delete `;` comments
 - [x] Replace `,` with space
 - [x] Split lines into list of operands
-- [-] Process and remove preprocessor directives like `@rep ... @end`
-- [x] Create label symbol table with line number
+- [x] Create label symbol table with addresses
+- [x] Process and remove preprocessor directives `@rep ... @end`
+- [x] Replace macros with instructions
 - [x] Report syntax errors
 
 ### Second
-- [ ] Generate start jump instruction if start label is present
+- [x] Generate start jump instruction if start label is present
 - [ ] Generate data section instructions
-- [ ] Replace constants with values
-- [ ] Replace label line numbers with addresses
-- [ ] Convert literals into numbers, report value errors
-- [ ] Convert operands into values
+- [x] Replace constants with values
+- [x] Replace labels with addresses
+- [x] Convert registers into values
 - [ ] Syntax analysis on instructions and operands
+- [ ] Convert literals into numbers
 - [ ] Replace mnemonics with opcodes
 
 ### Third
-- [ ] Replace labels with corresponding addresses
 - [ ] Report on any non-numeric symbols left
-- [ ] Convert instructions with operands into machine code
+- [ ] Convert instructions with operands into 32-bit machine code
 - [ ] Convert machine code into blueprint

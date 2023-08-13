@@ -217,7 +217,7 @@ These operations perform the represented operation on the operands.
 
 ### Subtract, Divide, Modulo, Exponentiation, Logical Shift Left, Logical Shift Right
 `<op>[s] Rd Rn Rm/imm8`\
-`<op>[s] Rd Rn/imm8 Rm`\
+`<op>[s] Rd imm8 Rm`\
 `<op>[s] Rd Rm/imm8`
 
 `<op>` can be one of\
@@ -254,8 +254,8 @@ Compares the operands and updates the flags accordingly. The same as `subs` with
 as the destination register.
 
 ### Jumps
-`jmp Rd/imm16`\
-`j<c> Rd/imm16`
+`jmp Rn/imm16`\
+`j<c> Rn/imm16`
 
 Where `<c>` can be one of\
 `eq` (Z)\
@@ -270,7 +270,7 @@ Where `<c>` can be one of\
 `vc` (!V)\
 `al` (always)
 
-Jump to the instruction at the address denoted by `Rd/imm16`.\
+Jump to the instruction at the address denoted by `Rn/imm16`.\
 `jmp` is an inconditional jump, whereas `<c>` is a condition which checks the flags
 register. In order, they are '=', '!=', '<', '>', '<=', '>=' (all signed), negative,
 positive or zero, overflow, no overflow, and always.

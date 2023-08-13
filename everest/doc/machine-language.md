@@ -195,7 +195,6 @@ Bit 27 of the Microcode controls clearing the SP, effectively clearing the stack
 - 4-7: 10
 - 9
 - 11
-- 12
 - 18
 - 29-30: 3
 
@@ -203,7 +202,6 @@ Bit 27 of the Microcode controls clearing the SP, effectively clearing the stack
 - 4-7: 10
 - 9
 - 11
-- 12
 - 13
 - 29-30: 3
 
@@ -211,7 +209,6 @@ Bit 27 of the Microcode controls clearing the SP, effectively clearing the stack
 - 4-7: 0-9
 - 9
 - 11
-- 12
 - 18
 - 29-30: 3
 
@@ -219,19 +216,16 @@ Bit 27 of the Microcode controls clearing the SP, effectively clearing the stack
 - 4-7: 0-9
 - 9
 - 11
-- 12
 - 13
 - 29-30: 3
 
 - [x] 97: PUSH REG
 - 11
-- 12
 - 13
 - 25
 
 - [x] 98: PUSH IMM16
 - 11
-- 12
 - 18
 - 25
 
