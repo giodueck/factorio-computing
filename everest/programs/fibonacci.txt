@@ -1,28 +1,12 @@
-.macro
-@const f1 1
-
-.program
-
-noop
-
-start:
-    MOV R0 #0   ; zeroeth fib number
-    MOV R1, f1   ; first fib number
-; Line comment
-
-
-    loop:
-        ADD R2 R0 R1
-        MOV R0 R1
-        MOV R1 R2
-        CALL subroutine
-        JMP loop
-
-subroutine:
-    @rep 3
-    ADD NIL R0 @{3, -1}
-    MOVs R0 @{0, 1}
-    @end
-    RETURN
-
-finish:
+; Starts with 0 and 1 as the first numbers
+        MOV     R0 #0
+        MOV     R1 #1
+LOOP:
+        ADDS     R2 R1 R0
+        MOV     R0 R1
+        ; Once a fibonacci number overflows, end and keep last number in R0
+        JVS     _END
+        MOV     R1 R2
+        JMP LOOP
+_END:
+        HALT

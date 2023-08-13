@@ -89,11 +89,11 @@ section becomes a jump to this label.
 - [x] Replace constants with values
 - [x] Replace labels with addresses
 - [x] Convert registers into values
-- [ ] Syntax analysis on instructions and operands
-- [ ] Convert literals into numbers
-- [ ] Replace mnemonics with opcodes
+- [x] Report on any non-numeric symbols left
+- [x] Syntax analysis on instructions and operands
+- [x] Convert literals into numbers
+- [x] Replace mnemonics with opcodes
+- [x] Convert instructions with operands into 32-bit machine code
 
 ### Third
-- [ ] Report on any non-numeric symbols left
-- [ ] Convert instructions with operands into 32-bit machine code
-- [ ] Convert machine code into blueprint
+- [x] Convert machine code into blueprint

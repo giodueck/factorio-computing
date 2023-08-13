@@ -3,7 +3,8 @@ import zlib
 import sys
 import string
 
-def rom_size(name: str) -> int:
+def rom_size(template_name: str) -> int:
+    name = template_name.split('/')[-1].split('\\')[-1]
     if name[:4] != 'ROM-':
         print('Template name must begin with "ROM-" followed by an integer number of bits.')
         exit(1)
@@ -126,7 +127,7 @@ registers = {
     'NIL': 255
 }
 
-debug = 1
+debug = 0
 lines = []
 lineinfo = []
 lineaddr = []
@@ -536,6 +537,7 @@ if __name__ == '__main__':
                         syntax_error(f'"{c[0]}" "{c[1]}" defined multiple times', lineinfo[i])
                     consts[c[1]] = c[2]
             elif c[0][1:] in ['DEFINE', 'INCLUDE']:
+                # TODO
                 syntax_error(f'"{c[0]}" is reserved but has not been implemented', lineinfo[i])
                 continue
             else:
@@ -553,8 +555,9 @@ if __name__ == '__main__':
             elif c[0][1:] == 'MACRO':
                 curr_section = 1
             elif c[0][1:] == 'DATA':
+                # TODO
                 curr_section = 2
-                syntax_error(f'"{c[0]}" has not been implemented', lineinfo[i])
+                syntax_error(f'"{c[0]}" is reserved but has not been implemented', lineinfo[i])
                 continue
             else:
                 syntax_error(f'unkown section "{c[0]}"')
@@ -647,14 +650,12 @@ if __name__ == '__main__':
             print(c)
         print('## END SECOND PASS ##')
     
-    ## Third pass
-    
     ## Output
     if errors:
         print(f'{errors} error{"s" if errors > 1 else ""} detected')
         exit(0)
-    exit(0)
     
+    ## Third pass
     bp = generate_bp(machine_code, sys.argv[2])
     
     if len(sys.argv) == 4:
