@@ -153,10 +153,10 @@ def lexical_error(msg: str, i: int):
     
 def instr_to_machine_code(c: list, i: int) -> list:
     if len(opcodes[c[0]]) == 1:
-        c = opcodes[c[0]][0]
+        c = opcodes[c[0]][0] << 24
         return c
     
-    if len(opcodes[c[0]]) == 2:
+    if len(opcodes[c[0]]) > 1:
         
         # Comments show byte order of operands, for IMM16 the blank byte immediately to the back or front (when the last byte is not blank)
         #   is the LSB or MSB respectively
