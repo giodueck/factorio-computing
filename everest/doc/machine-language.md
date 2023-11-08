@@ -31,8 +31,8 @@ R: Result
 - [ ] 22: 
 - [ ] 23-24: 
 - [x] 25: Push (Value from A)
-- [ ] 26: Pop  (Value onto R)
-- [ ] 27: Clear SP
+- [x] 26: Pop  (Value onto R)
+- [x] 27: Clear SP
 - [ ] 28: 
 - [x] 29-30: Special destination: 0: nothing, 1: nothing, 2: LR, 3: PC
 - [ ] 31: 

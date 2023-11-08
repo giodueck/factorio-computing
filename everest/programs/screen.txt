@@ -1,0 +1,28 @@
+.macro
+@const flush_buffer 4108
+
+.program
+mov r0 #1
+str r0 #4096
+
+@rep 11
+lsh r0 #1
+add r0 #1
+str r0 @{4097, 1}
+;mov r2 @{1, 1}
+noop
+@end
+
+mov r0 #1
+str r0 flush_buffer
+str nil flush_buffer
+
+@rep 12
+str nil @{4096, 1}
+@end
+
+mov r0 #1
+str r0 flush_buffer
+str nil flush_buffer
+
+reset
