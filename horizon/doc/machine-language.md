@@ -16,12 +16,20 @@ Destination: Always a register
 Arg1: Always a register
 Arg2: Register or imm8, depending on flag in opcode byte
 
-The largest bit in the instruction byte denotes the type of Arg. 2, 0: Reg., 1: Imm8.
+The largest bit in the instruction byte denotes the type of Arg. 2: 0: Reg., 1: Imm8.
+For instructions with 1 argument (e.g. conditions, memory and stack) the flag denotes the type
+of Arg. 1: 0: Reg., 1: Imm16.
 
 Immediate values must be added using ALU operations, as only the second argument can ever be an immediate.
 To facilitate introducing larger immediates, ALU operations to concatenate values exist. Assembly language could make use of these instructions to abstract away MOVing larger immediates into registers, as MOV itself will be an abstraction built on ALU operations.
 
 Instructions with an asterisk (*) are not basic and may only be included in second iterations.
+
+## Clock stages
+1. Load instruction
+2. Load registers
+3. Save operation result
+4. Instruction over
 
 ## Registers
 Numbered 0x0 to 0xf:
@@ -46,8 +54,8 @@ Numbered 0x0 to 0xf:
 - 9: or
 - a: not
 - b: xor
-- c*: bcat (concatenate a byte to the end of a register's value, useful to input longer immediates)
-- d*: hcat (concatenate a half word to the end of a register)
+- c: bcat (concatenate a byte to the end of a register's value, useful to input longer immediates)
+- d: hcat (concatenate a half word to the end of a register)
 
 ## ALU Operations with condition flags: 0x1
 - 0: adds
@@ -62,8 +70,8 @@ Numbered 0x0 to 0xf:
 - 9: ors
 - a: nots
 - b: xors
-- c*: bcat
-- d*: hcat
+- c: bcat
+- d: hcat
 
 ## COND Operations: 0x2
 - 0: eq (Z)
@@ -115,7 +123,7 @@ Numbered 0x10 to 0x4f
 Vx and Ux registers can be written like any other register, and Tx and Sx can be read from, but they are all
 one function only. Vx and Ux are write-only and Tx and Sx are read-only for non-vector instructions.
 
-### Vector ALU operations (result T): 0x8
+### Vector ALU operations (result T): 0x4
 - 0*: vtadd
 - 1*: vtsub
 - 2*: vtmul
@@ -129,7 +137,7 @@ one function only. Vx and Ux are write-only and Tx and Sx are read-only for non-
 - a*: vtnot
 - b*: vtxor
 
-### Vector ALU operations (result S): 0x9
+### Vector ALU operations (result S): 0x5
 - 0*: vsadd
 - 1*: vssub
 - 2*: vsmul
@@ -143,10 +151,21 @@ one function only. Vx and Ux are write-only and Tx and Sx are read-only for non-
 - a*: vsnot
 - b*: vsxor
 
-### Vector register access: 0xa
+### Vector register access: 0x6
 - 0: movtv (move registers Tx to Vx)
 - 1: movtu (" Tx to Ux)
 - 2: movsv (" Sx to Vx)
 - 3: movsu (" Sx to Ux)
 - 4: copyv (copy single value into all Vx)
 - 5: copyu (copy single value into all Vx)
+
+## Test program
+xor r0 r0       0x0b 00 00 00   184549376
+xor r1 r1       0x0b 01 01 01   184615169
+add r0 #15      0x80 00 00 0f   -2147483633
+add r1 #5       0x80 01 01 05   -2147417851
+add r2 r0 r1    0x00 02 00 01   131073
+subs r3 r1 r2   0x11 03 01 02   285409538
+exp r4 r0 r1    0x05 04 00 01   84148225
+bcat r5 r1 #5   0x8c 05 01 05   -1945829115
+hcat r6 r1 #5   0x8d 06 01 05   -1928986363
