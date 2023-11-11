@@ -74,6 +74,7 @@ Numbered 0x0 to 0xf:
 - d: hcat
 
 ## COND Operations: 0x2
+j__
 - 0: eq (Z)
 - 1: ne (!Z)
 - 2: lt (N != V)
@@ -84,7 +85,7 @@ Numbered 0x0 to 0xf:
 - 7: pz (!N)
 - 8: vs (V)
 - 9: vc (!V)
-- a: al (always)
+- a: mp (always)
 - b: nt (never) (noop)
 
 ## Memory access: 0x3
@@ -159,7 +160,8 @@ one function only. Vx and Ux are write-only and Tx and Sx are read-only for non-
 - 4: copyv (copy single value into all Vx)
 - 5: copyu (copy single value into all Vx)
 
-## Test program
+## Test programs
+; ALU test
 xor r0 r0       0x0b 00 00 00   184549376
 xor r1 r1       0x0b 01 01 01   184615169
 add r0 #15      0x80 00 00 0f   -2147483633
@@ -169,3 +171,15 @@ subs r3 r1 r2   0x11 03 01 02   285409538
 exp r4 r0 r1    0x05 04 00 01   84148225
 bcat r5 r1 #5   0x8c 05 01 05   -1945829115
 hcat r6 r1 #5   0x8d 06 01 05   -1928986363
+jmp #16         0xaa 00 00 10   -1442840560
+
+; For loop test
+add r1 nil #2       0x80 01 ff 02   -2147352830
+xor r0 r0           0x0b 00 00 00   184549376
+loop:               
+    add r0 r1       0x00 00 00 01   1
+    subs r1 #1      0x91 01 01 01   -1862205183
+    noop            0x2b 00 00 00   721420288
+    jne loop        0xa1 00 00 02   -1593835518
+end:
+jmp pc              0x2a 00 0f 00   704646912
