@@ -214,8 +214,8 @@ For bigger immediates, the instruction is translated to\
 where `imm16H` and `imm16L` are the high and low bytes respectively.
 
 ### Store
-`str Rn`\
-Stores the value in `Rn` into the memory address stored in `AR`.
+`str Rn/imm16`\
+Stores the value in `Rn/imm16` into the memory address stored in `AR`.
 
 ### Load
 `ldr Rd`\

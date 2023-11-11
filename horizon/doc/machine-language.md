@@ -25,6 +25,13 @@ To facilitate introducing larger immediates, ALU operations to concatenate value
 
 Instructions with an asterisk (*) are not basic and may only be included in second iterations.
 
+With all this in mind, the possible instruction formats are:
+1. opcode
+2. opcode Rd Rn Rm      / opcode Rd Rn      (Rd is result and arg1)
+3. opcode Rd Rn imm8    / opcode Rd imm8    (Rd is result and arg1)
+4. opcode Rn
+5. opcode imm16
+
 ## Clock stages
 1. Load instruction
 2. Load registers
@@ -42,6 +49,8 @@ Numbered 0x0 to 0xf:
 - f: PC
 
 ## ALU Operations: 0x0
+Instruction formats: 2, 3, 4 (only not)
+
 - 0: add
 - 1: sub
 - 2: mul
@@ -58,6 +67,8 @@ Numbered 0x0 to 0xf:
 - d: hcat (concatenate a half word to the end of a register)
 
 ## ALU Operations with condition flags: 0x1
+Instruction formats: 2, 3, 4 (only not)
+
 - 0: adds
 - 1: subs
 - 2: muls
@@ -74,6 +85,8 @@ Numbered 0x0 to 0xf:
 - d: hcat
 
 ## COND Operations: 0x2
+Instruction formats: 1 (only noop), 4, 5
+
 j__
 - 0: eq (Z)
 - 1: ne (!Z)
@@ -89,17 +102,20 @@ j__
 - b: nt (never) (noop)
 
 ## Memory access: 0x3
-Address used is always the one stored in RA.
-Value to store is also always a register, and RA is illegal to use as an operand in memory access instructions
+Instruction format: 4
+
+Address used is always the one stored in AR.
+Value to store is also always a register, and AR is illegal to use as an operand in memory access instructions
 
 - 0: store
 - 1: load
-- 2*: storei (store and increment RA)
-- 3*: loadi (load and increment RA)
-- 4*: stored (store and decrement RA)
-- 5*: loadd (load and decrement RA)
+- 2*: storei (store and increment AR)
+- 3*: loadi (load and increment AR)
+- 4*: stored (store and decrement AR)
+- 5*: loadd (load and decrement AR)
 
 ## Stack: 0x3
+Instruction formats: 1 (only return), 4, 5 (push, call)
 
 The stack is 512 cells wide, and SP always points to the first empty address
 on the top of the stack.

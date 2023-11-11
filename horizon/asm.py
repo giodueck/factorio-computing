@@ -133,6 +133,7 @@ def generate_bp(program: list[int]) -> str:
 
 
 ## Opcodes
+# TODO: add Horizon opcodes, macros and registers
 opcodes = {
     'NOOP': [0],
     'RESET': [2], 
@@ -252,6 +253,7 @@ def lexical_error(msg: str, i: int):
     global errors; errors += 1
     
 def instr_to_machine_code(c: list, i: int) -> list:
+    # TODO: add Horizon translations
     if len(opcodes[c[0]]) == 1:
         c = opcodes[c[0]][0] << 24
         return c
