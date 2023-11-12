@@ -1,0 +1,10 @@
+; For loop (branching) test
+add r1 nil #2       ;0x80 01 ff 02   -2147352830
+xor r0 r0           ;0x0b 00 00 00   184549376
+loop:               ;    2
+    add r0 r1       ;0x00 00 00 01   1
+    subs r1 #1      ;0x91 01 01 01   -1862205183
+    noop            ;0x2b 00 00 00   721420288
+    jne loop        ;0xa1 00 00 02   -1593835518
+end_:               ;    6
+jmp pc              ;0x2a 00 0f 00   704646912

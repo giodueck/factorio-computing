@@ -187,15 +187,11 @@ Halt program execution by jumping to the same instruction, creating an infinite 
 
 ### Reset
 `reset`\
-Reset the program counter, registers and memory are kept the same since turning off power
+Reset the program counter and stack pointer, stack and memory are kept the same since turning off power
 does not clear the contents of RW memory cells.
 
 Is implemented as a Macro, as its behavior is the same as
-`xor r0 r0`
-`xor r1 r1`
-`xor r2 r2`
-...
-`xor LR LR`
+`xor SP SP`
 `jmp #0`
 
 ### Move/Copy
@@ -218,7 +214,7 @@ Stores the value in `Rn/imm16` into the memory address stored in `AR`.
 `load Rd`\
 Loads the word stored in the memory address in `AR` into `Rd`.
 
-### Add, Multiply, AND, OR, XOR, Subtract, Divide, Modulo, Exponentiation, Logical Shift Left, Logical Shift Right, Byte concatenate, Halfword concatenate
+### Add, Multiply, AND, OR, XOR, Subtract, Divide, Modulo, Exponentiation, Logical Shift Left, Arithmetic Shift Right, Byte concatenate, Halfword concatenate
 `<op>[s] Rd Rn Rm/imm8`\
 `<op>[s] Rd Rm/imm8`
 

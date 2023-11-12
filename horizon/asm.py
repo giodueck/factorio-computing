@@ -133,66 +133,67 @@ def generate_bp(program: list[int]) -> str:
 
 
 ## Opcodes
-# TODO: add Horizon opcodes, macros and registers
 opcodes = {
-    'NOOP': [0],
-    'RESET': [2], 
-    'MOV': [3, 4], 
-    'MOVS': [5, 6],
-    'STR': [7, 8], 
-    'LDR': [9, 10],
-    'LDRS': [11, 12],
-    'ADD': [15, 20], 
-    'MUL': [16, 21], 
-    'AND': [17, 22], 
-    'ORR': [18, 23], 
-    'XOR': [19, 24], 
-    'SUB': [25, 31, 37], 
-    'DIV': [26, 32, 38], 
-    'MOD': [27, 33, 39], 
-    'EXP': [28, 34, 40], 
-    'LSH': [29, 35, 41], 
-    'RSH': [30, 36, 42], 
-    'NOT': [43, 44], 
-    'NOTS': [45, 46],
-    'ADDS': [47, 52],
-    'MULS': [48, 53],
-    'ANDS': [49, 54],
-    'ORRS': [50, 55],
-    'XORS': [51, 56],
-    'SUBS': [57, 63, 69], 
-    'DIVS': [58, 64, 70], 
-    'MODS': [59, 65, 71], 
-    'EXPS': [60, 66, 72], 
-    'LSHS': [61, 67, 73], 
-    'RSHS': [62, 68, 74],
-        'JMP': [75, 76],
-        'JEQ': [77, 87], 
-        'JNE': [78, 88], 
-        'JLT': [79, 89], 
-        'JGT': [80, 90], 
-        'JLE': [81, 91], 
-        'JGE': [82, 92], 
-        'JNG': [83, 93], 
-        'JPZ': [84, 94], 
-        'JVS': [85, 95], 
-        'JVC': [86, 96], 
-        'PUSH': [97, 98],
-    'POP': [99], 
-    'POPS': [100], 
-    'CLSP': [101]
+    'ADD':   [0, 128],
+    'SUB':   [1, 129],
+    'MUL':   [2, 130],
+    'DIV':   [3, 131],
+    'MOD':   [4, 132],
+    'EXP':   [5, 133],
+    'SHL':   [6, 134],
+    'SHR':   [7, 135],
+    'AND':   [8, 136],
+    'OR':    [9, 137],
+    'NOT':   [10, 138],
+    'XOR':   [11, 139],
+    'BCAT':  [12, 140],
+    'HCAT':  [13, 141],
+    'ADDS':  [16, 144],
+    'SUBS':  [17, 145],
+    'MULS':  [18, 146],
+    'DIVS':  [19, 147],
+    'MODS':  [20, 148],
+    'EXPS':  [21, 149],
+    'LSHS':  [22, 150],
+    'RSHS':  [23, 151],
+    'ANDS':  [24, 152],
+    'ORS':   [25, 153],
+    'NOTS':  [26, 154],
+    'XORS':  [27, 155],
+    'BCATS': [28, 156],
+    'HCATS': [29, 157],
+    'JEQ':   [32, 160],
+    'JNE':   [33, 161],
+    'JLT':   [34, 162],
+    'JGT':   [35, 163],
+    'JLE':   [36, 164],
+    'JGE':   [37, 165],
+    'JNG':   [38, 166],
+    'JPZ':   [39, 167],
+    'JVS':   [40, 168],
+    'JVC':   [41, 169],
+    'JMP':   [42, 170],
+    'NOOP':  [43],
+    'STORE': [48, 176],
+    'LOAD':  [49],
+    'PUSH':  [56, 184],
+    'POP':   [57]
 }
 
-builtin_macros = [
-    'HALT',
-    'CMP',
-    'INC',
-    'INCS',
-    'DEC',
-    'DECS',
-    'CALL',
-    'RETURN'
-]
+# Numbers must be replaced with the argument of that index
+builtin_macros = {
+    'HALT': [['JMP', 'PC']],
+    'RESET': [['XOR', 'SP', 'SP'], ['JMP', '#0']],
+    'CMP': [['SUBS', 'NIL', 1, 2]],
+    'INC': [['ADD', 1, '#1']],
+    'INCS': [['ADDS', 1, '#1']],
+    'DEC': [['SUB', 1, '#1']],
+    'DECS': [['SUBS', 1, '#1']],
+    'CALL': [['ADD', 'LR', 'PC', '#2'], ['JMP', 1]],
+    'RETURN': [['JMP', 'LR']],
+    'MOV': [['ADD', 1, 'NIL', 2]],
+    'MOVS': [['ADDS', 1, 'NIL', 2]]
+}
 
 preprocessor = [
     'CONST',
@@ -221,7 +222,7 @@ registers = {
     'R9': 9,
     'R10': 10,
     'R11': 11,
-    'R12': 12,
+    'AR': 12,
     'SP': 13,
     'LR': 14,
     'PC': 15,
@@ -248,203 +249,136 @@ def syntax_error(msg: str, i: int):
     print(f'Syntax error on line {i}: {msg}')
     global errors; errors += 1
 
-def lexical_error(msg: str, i: int):
-    print(f'Unknown token on line {i}: {msg}')
+def lexical_error(msg: str, i: int, hint_label: bool = False):
+    if not hint_label:
+        print(f'Unknown token on line {i}: {msg}')
+    else:
+        print(f'Malformed label on line {i}: {msg}')
     global errors; errors += 1
     
 def instr_to_machine_code(c: list, i: int) -> list:
-    # TODO: add Horizon translations
-    if len(opcodes[c[0]]) == 1:
+    if c[0] in ['NOOP']:
         c = opcodes[c[0]][0] << 24
         return c
     
-    if len(opcodes[c[0]]) > 1:
+    # Comments show byte order of operands, for IMM16 the blank byte immediately to the back or front (when the last byte is not blank)
+    #   is the LSB or MSB respectively
+    # RN is the first register operand
+    # RM is the second register operand
+    # RD is the destination register, and synonymous with RN where RN is ommitted
+    # IMM8 and IMM16 are immediate values of 8 and 16 bits respectively
+    
+    # OP RD RN RM
+    # OP RD RN IMM8
+    if c[0] in ['ADD', 'MUL', 'AND', 'ORR', 'XOR', 'ADDS', 'MULS', 'ANDS', 'ORRS', 'XORS', 'SUB', 'DIV', 'MOD', 'EXP', 'LSH', 'RSH', 'SUBS', 'DIVS', 'MODS', 'EXPS', 'LSHS', 'RSHS', 'BCAT', 'HCAT', 'BCATS', 'HCATS']:
+        # RN = RD
+        if len(c) < 4:
+            c.insert(1, c[1])
         
-        # Comments show byte order of operands, for IMM16 the blank byte immediately to the back or front (when the last byte is not blank)
-        #   is the LSB or MSB respectively
-        # RN is the first register operand
-        # RM is the second register operand
-        # RD is the destination register, and synonymous with RN where RN is ommitted
-        # IMM8 and IMM16 are immediate values of 8 and 16 bits respectively
+        # c = [OP, RD, RN, RM/IMM8]
         
-        # OP RD RN _
-        # OP RD IMM16 _
-        if c[0] in ['MOV', 'MOVS', 'LDR', 'LDRS', 'NOT', 'NOTS']:
-            # RN = RD
-            if c[0] in ['NOT', 'NOTS'] and len(c) < 3:
-                c.insert(1, c[1])
-            
-            # c = [OP, RD, RN, RM/IMM16]
-            
-            if len(c) < 3:
-                syntax_error(f'too few arguments', code_info[i])
-                return c
-            elif len(c) > 3:
-                syntax_error(f'too many arguments', code_info[i])
-                return c
-            
-            if type(c[1]) != int:
-                syntax_error('expected register as first argument', code_info[i])
-                return c
-            
-            if type(c[2]) == int:
-                t = 0
-            else:
-                t = 1
-                c[2] = int(c[2][1:])
-                if c[2] < -32768 or c[2] > 32767:
-                    syntax_error(f'literal "#{c[2]}" out of range [-32768, 32767]', code_info[i])
-                    return c
-            
-            c[0] = opcodes[c[0]][t]
-            
-            c = c[0] << 24 | c[1] << 16 | (c[2] << 8 if t == 0 else c[2] & 0xFFFF)
+        if len(c) < 4:
+            syntax_error(f'too few arguments', code_info[i])
+            return c
+        elif len(c) > 4:
+            syntax_error(f'too many arguments', code_info[i])
             return c
         
-        # OP _ RM RN
-        # OP _ IMM16 RN
-        if c[0] in ['STR']:
-            # c = [OP, RN, RM/IMM16]
-            
-            if len(c) < 3:
-                syntax_error(f'too few arguments', code_info[i])
-                return c
-            elif len(c) > 3:
-                syntax_error(f'too many arguments', code_info[i])
-                return c
-            
-            if type(c[1]) != int:
-                syntax_error('expected register as first argument', code_info[i])
-                return c
-            
-            if type(c[2]) == int:
-                t = 0
-            else:
-                t = 1
-                c[2] = int(c[2][1:])
-                if c[2] < -32768 or c[2] > 32767:
-                    syntax_error(f'literal "#{c[2]}" out of range [-32768, 32767]', code_info[i])
-                    return c
-            
-            c[0] = opcodes[c[0]][t]
-            
-            c = c[0] << 24 | c[1] | (c[2] << 8 if t == 0 else (c[2] & 0xFFFF) << 8)
+        if type(c[1]) != int:
+            syntax_error('expected register as destination', code_info[i])
+            return c
+        if type(c[2]) != int:
+            syntax_error('expected register as first operand', code_info[i])
             return c
         
-        # OP RD RN RM
-        # OP RD RN IMM8
-        if c[0] in ['ADD', 'MUL', 'AND', 'ORR', 'XOR', 'ADDS', 'MULS', 'ANDS', 'ORRS', 'XORS']:
-            # RN = RD
-            if len(c) < 4:
-                c.insert(1, c[1])
-            
-            # c = [OP, RD, RN, RM/IMM8]
-            
-            if len(c) < 4:
-                syntax_error(f'too few arguments', code_info[i])
+        if type(c[3]) == int:
+            t = 0
+        else:
+            t = 1
+            c[3] = int(c[3][1:], base=0)
+            if c[3] < -128 or c[3] > 127:
+                syntax_error(f'literal "#{c[2]}" out of range [-128, 127]', code_info[i])
                 return c
-            elif len(c) > 4:
-                syntax_error(f'too many arguments', code_info[i])
-                return c
-            
-            if type(c[1]) != int:
-                syntax_error('expected register as first argument', code_info[i])
-                return c
-            if type(c[2]) != int:
-                syntax_error('expected register as second argument', code_info[i])
-                return c
-            
-            if type(c[3]) == int:
-                t = 0
-            else:
-                t = 1
-                c[3] = int(c[3][1:])
-                if c[3] < -128 or c[3] > 127:
-                    syntax_error(f'literal "#{c[2]}" out of range [-128, 127]', code_info[i])
-                    return c
-            
-            c[0] = opcodes[c[0]][t]
-            
-            c = c[0] << 24 | c[1] << 16 | c[2] << 8 | c[3] & 0xFF
+        
+        c[0] = opcodes[c[0]][t]
+        
+        c = c[0] << 24 | c[1] << 16 | c[2] << 8 | c[3] & 0xFF
+        return c
+    
+    # OP RD RN _
+    if c[0] in ['NOT', 'NOTS']:
+        # RN = RD
+        if len(c) < 3:
+            c.insert(1, c[1])
+        
+        # c = [OP, RD, RN, RM/IMM8]
+        
+        if len(c) < 3:
+            syntax_error(f'too few arguments', code_info[i])
+            return c
+        elif len(c) > 3:
+            syntax_error(f'too many arguments', code_info[i])
             return c
         
-        # OP RD RN RM
-        # OP RD RN IMM8
-        # OP RD IMM8 RM
-        if c[0] in ['SUB', 'DIV', 'MOD', 'EXP', 'LSH', 'RSH', 'SUBS', 'DIVS', 'MODS', 'EXPS', 'LSHS', 'RSHS']:
-            # RN = RD
-            if len(c) < 4:
-                c.insert(1, c[1])
-            
-            # c = [OP, RD, RN, RM/IMM8] xor [OP, RD, IMM8, RM]
-            
-            if len(c) < 4:
-                syntax_error(f'too few arguments', code_info[i])
+        if type(c[1]) != int:
+            syntax_error('expected register as destination', code_info[i])
+            return c
+        if type(c[2]) != int:
+            syntax_error('expected register as operand', code_info[i])
+            return c
+        
+        t = 0
+        
+        c[0] = opcodes[c[0]][t]
+        
+        c = c[0] << 24 | c[1] << 16 | c[2] << 8
+        return c
+    
+    # OP _ RN _
+    # OP _ IMM16 _
+    if c[0] in ['JMP', 'JEQ', 'JNE', 'JLT', 'JGT', 'JLE', 'JGE', 'JNG', 'JPZ', 'JVS', 'JVC', 'PUSH', 'STORE']:
+        # c = [OP, RN/IMM16]
+        
+        if len(c) < 2:
+            syntax_error(f'too few arguments', code_info[i])
+            return c
+        elif len(c) > 2:
+            syntax_error(f'too many arguments', code_info[i])
+            return c
+    
+        if type(c[1]) == int:
+            t = 0
+        else:
+            t = 1
+            c[1] = int(c[1][1:], base=0)
+            if c[1] < -32768 or c[1] > 32767:
+                syntax_error(f'literal "#{c[1]}" out of range [-32768, 32767]', code_info[i])
                 return c
-            elif len(c) > 4:
-                syntax_error(f'too many arguments', code_info[i])
-                return c
-            
-            if type(c[1]) != int:
-                syntax_error('expected register as first argument', code_info[i])
-                return c
-            if type(c[2]) != int and type(c[3]) != int:
-                syntax_error('expected register as second or third argument', code_info[i])
-                return c
-            
-            if type(c[2]) == int and type[c[3]] == int:
-                t = 0
-            elif type(c[2]) != int:
-                t = 2
-                c[2] = int(c[2][1:])
-                if c[2] < -128 or c[2] > 127:
-                    syntax_error(f'literal "#{c[2]}" out of range [-128, 127]', code_info[i])
-                    return c
-            elif type(c[3]) != int:
-                t = 1
-                c[3] = int(c[3][1:])
-                if c[3] < -128 or c[3] > 127:
-                    syntax_error(f'literal "#{c[2]}" out of range [-128, 127]', code_info[i])
-                    return c
-            
-            c[0] = opcodes[c[0]][t]
-            
-            c = c[0] << 24 | c[1] << 16 | (c[2] & 0xFF) << 8 | c[3] & 0xFF
+        
+        c[0] = opcodes[c[0]][t]
+        
+        c = c[0] << 24 | (c[1] << 8 if t == 0 else c[1] & 0xFFFF)
+        return c
+
+    # OP RD _ _
+    if c[0] in ['LOAD', 'POP']:
+        # c = [OP, RD]
+        
+        if len(c) < 2:
+            syntax_error(f'too few arguments', code_info[i])
+            return c
+        elif len(c) > 2:
+            syntax_error(f'too many arguments', code_info[i])
             return c
 
-        # OP _ RN _
-        # OP _ IMM16 _
-        if c[0] in ['JMP', 'JEQ', 'JNE', 'JLT', 'JGT', 'JLE', 'JGE', 'JNG', 'JPZ', 'JVS', 'JVC', 'PUSH']:
-            # c = [OP, RN/IMM16]
-            
-            if len(c) < 2:
-                syntax_error(f'too few arguments', code_info[i])
-                return c
-            elif len(c) > 2:
-                syntax_error(f'too many arguments', code_info[i])
-                return c
-            
-            if type(c[1]) == int:
-                ot = 0
-                if c[0] == 'PUSH':
-                    t = 0
-                else:
-                    t = 1
-            else:
-                ot = 1
-                if c[0] == 'PUSH':
-                    t = 1
-                else:
-                    t = 0
-                c[1] = int(c[1][1:])
-                if c[1] < -32768 or c[1] > 32767:
-                    syntax_error(f'literal "#{c[1]}" out of range [-32768, 32767]', code_info[i])
-                    return c
-            
-            c[0] = opcodes[c[0]][t]
-            
-            c = c[0] << 24 | (c[1] << 8 if ot == 0 else c[1] & 0xFFFF)
+        if type(c[1]) != int:
+            syntax_error('expected register as destination', code_info[i])
             return c
+        
+        c[0] = opcodes[c[0]][0]
+        
+        c = c[0] << 24 | c[1] << 16
+        return c
     
     return c
 
@@ -452,24 +386,13 @@ def macro_to_instr(c: list):
     o = c[0]
     out = []
     
-    if o == 'HALT':
-        out.append(['JMP', 'PC'])
-    elif o == 'CMP':
-        out.append(c)
-        out[-1][0] = 'SUBS'
-    elif o == 'INC':
-        out.append(['ADD', c[1], c[1], '#1'])
-    elif o == 'INCS':
-        out.append(['ADDS', c[1], c[1], '#1'])
-    elif o == 'DEC':
-        out.append(['SUB', c[1], c[1], '#1'])
-    elif o == 'DECS':
-        out.append(['SUBS', c[1], c[1], '#1'])
-    elif o == 'CALL':
-        out.append(['ADD', 'LR', 'PC', '#2'])
-        out.append(['JMP', c[1]])
-    elif o == 'RETURN':
-        out.append(['JMP', 'LR'])
+    for i in builtin_macros[o]:
+        ins = i.copy()
+        for j, a in enumerate(ins):
+            if type(a) == int:
+                ins[j] = c[a]
+                
+        out.append(ins)
     
     return out
 
@@ -684,9 +607,9 @@ if __name__ == '__main__':
             interpret_instr(c, i)
             program_reached = 1
             
-        # Everything not picked up is a lexical error
+        # Everything not picked up is a lexical error, hint at labels ending in ':'
         else:
-            lexical_error(c[0], lineinfo[i])
+            lexical_error(c[0], lineinfo[i], True)
     
     if repeat:
         syntax_error('"@REP" without a corresponding "@END"', repeat_line)
@@ -751,20 +674,22 @@ if __name__ == '__main__':
         print('## END MID SECOND PASS ##')
         print()
     
+    ## Output
+    if errors:
+        print(f'{errors} error{"s" if errors > 1 else ""} detected')
+        exit(0)
+    
     # Convert instructions into machine code
     for i, instr in enumerate(machine_code):
+        # print(instr)
         machine_code[i] = instr_to_machine_code(instr, i)
+        machine_code[i] = machine_code[i] - 2 * (machine_code[i] & (1 << 31))
     
     if debug:
         print('## SECOND PASS ##')
         for c in machine_code:
             print(c)
         print('## END SECOND PASS ##')
-    
-    ## Output
-    if errors:
-        print(f'{errors} error{"s" if errors > 1 else ""} detected')
-        exit(0)
     
     ## Third pass
     bp = generate_bp(machine_code)

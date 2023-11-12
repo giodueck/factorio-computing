@@ -57,8 +57,8 @@ Instruction formats: 2, 3, 4 (only not)
 - 3: div
 - 4: mod
 - 5: exp
-- 6: shl
-- 7: shr
+- 6: lsh
+- 7: rsh
 - 8: and
 - 9: or
 - a: not
@@ -75,8 +75,8 @@ Instruction formats: 2, 3, 4 (only not)
 - 3: divs
 - 4: mods
 - 5: exps
-- 6: shls
-- 7: shrs
+- 6: lshs
+- 7: rshs
 - 8: ands
 - 9: ors
 - a: nots
@@ -147,8 +147,8 @@ one function only. Vx and Ux are write-only and Tx and Sx are read-only for non-
 - 3*: vtdiv
 - 4*: vtmod
 - 5*: vtexp
-- 6*: vtshl
-- 7*: vtshr
+- 6*: vtlsh
+- 7*: vtrsh
 - 8*: vtand
 - 9*: vtor
 - a*: vtnot
@@ -161,8 +161,8 @@ one function only. Vx and Ux are write-only and Tx and Sx are read-only for non-
 - 3*: vsdiv
 - 4*: vsmod
 - 5*: vsexp
-- 6*: vsshl
-- 7*: vsshr
+- 6*: vslsh
+- 7*: vsrsh
 - 8*: vsand
 - 9*: vsor
 - a*: vsnot
@@ -193,12 +193,12 @@ jmp #16         0xaa 00 00 10   -1442840560
 ; For loop (branching) test
 add r1 nil #2       0x80 01 ff 02   -2147352830
 xor r0 r0           0x0b 00 00 00   184549376
-loop:               
+loop:                   2
     add r0 r1       0x00 00 00 01   1
     subs r1 #1      0x91 01 01 01   -1862205183
     noop            0x2b 00 00 00   721420288
     jne loop        0xa1 00 00 02   -1593835518
-end:
+end:                    6
 jmp pc              0x2a 00 0f 00   704646912
 
 ; Stack test
