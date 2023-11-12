@@ -1,16 +1,13 @@
 # Assembly language features
 ## General considerations
 Casing doesn't matter and whitespace will be ignored. Tokens are separated by whitespace.
-One sentence per line, no line endings but for the newline character itself.
+One sentence per line, newline character for line endings.
 
 ## Registers
 There are 12 general-purpose registers named `R0`, `R1`, ..., `R11`.
-`AR` is the address register used for load and store operations, `R13` or `SP` is the stack
-pointer, `R14` or `LR` is the link register, and `R15` or `PC` is the program counter which
+`AR` is the address register used for load and store operations, `SP` is the stack
+pointer, `LR` is the link register, and `PC` is the program counter which
 is only writable by jump instructions.
-
-`LR` has no special purpose in the first generation of Everest, but keeping the
-return address of a subroutine call in this register simplifies the code.
 
 `NIL` is a pseudo-register which is defined as `255` and does not really exist, causing
 reads from it to result in `0` and writes to it to be discarded. This can be used to get
@@ -214,11 +211,11 @@ For bigger immediates, the instruction is translated to\
 where `imm16H` and `imm16L` are the high and low bytes respectively.
 
 ### Store
-`str Rn/imm16`\
+`store Rn/imm16`\
 Stores the value in `Rn/imm16` into the memory address stored in `AR`.
 
 ### Load
-`ldr Rd`\
+`load Rd`\
 Loads the word stored in the memory address in `AR` into `Rd`.
 
 ### Add, Multiply, AND, OR, XOR, Subtract, Divide, Modulo, Exponentiation, Logical Shift Left, Logical Shift Right, Byte concatenate, Halfword concatenate

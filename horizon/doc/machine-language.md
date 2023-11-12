@@ -105,7 +105,7 @@ j__
 Instruction format: 4
 
 Address used is always the one stored in AR.
-Value to store is also always a register, and AR is illegal to use as an operand in memory access instructions
+Value to store is a register or imm16 from arg. 1.
 
 - 0: store
 - 1: load
@@ -177,6 +177,7 @@ one function only. Vx and Ux are write-only and Tx and Sx are read-only for non-
 - 5: copyu (copy single value into all Vx)
 
 ## Test programs
+```
 ; ALU test
 xor r0 r0       0x0b 00 00 00   184549376
 xor r1 r1       0x0b 01 01 01   184615169
@@ -215,3 +216,26 @@ loop2:              5
     jmp loop2   0xaa 00 00 05   -1442840571
 end:                10
 jmp pc          0x2a 00 0f 00   704646912
+
+; RAM test
+xor r0 r0       0x0b 00 00 00   184549376
+add r1 nil #3   0x80 01 ff 03   -2147352829
+xor ar ar       0x0b 0c 0c 0c   185338892
+loop:               3
+    store r1    0x30 00 01 00   805306624
+    add ar #1   0x80 0c 0c 01   -2146694143
+    subs r1 #1  0x91 01 01 01   -1862205183
+    jne loop    0xa1 00 00 03   -1593835517
+store #0        0xb0 00 00 00   -1342177280
+xor ar ar       0x0b 0c 0c 0c   185338892
+loop2:              9
+    load r1     0x31 01 00 00   822149120
+    add ar #1   0x80 0c 0c 01   -2146694143
+    cmp r1 #0   0x91 ff 01 00   -1845559040
+    jeq end     0xa0 00 00 0f   -1610612721
+    add r0 r1   0x00 00 00 01   1
+    jmp loop2   0xaa 00 00 09   -1442840567
+end:                15
+jmp pc          0x2a 00 0f 00   704646912
+
+```
