@@ -189,7 +189,7 @@ bcat r5 r1 #5   0x8c 05 01 05   -1945829115
 hcat r6 r1 #5   0x8d 06 01 05   -1928986363
 jmp #16         0xaa 00 00 10   -1442840560
 
-; For loop test
+; For loop (branching) test
 add r1 nil #2       0x80 01 ff 02   -2147352830
 xor r0 r0           0x0b 00 00 00   184549376
 loop:               
@@ -199,3 +199,19 @@ loop:
     jne loop        0xa1 00 00 02   -1593835518
 end:
 jmp pc              0x2a 00 0f 00   704646912
+
+; Stack test
+xor r0 r0       0x0b 00 00 00   184549376
+add r1 nil #4   0x80 01 ff 04   -2147352828
+loop:               2
+    push r1     0x38 00 01 00   939524352
+    subs r1 #1  0x91 01 01 01   -1862205183
+    jne loop    0xa1 00 00 02   -1593835518
+loop2:              5
+    cmp sp nil  0x11 ff 0d ff   301927935
+    jeq end     0xa0 00 00 0a   -1610612726
+    pop r1      0x39 01 00 00   956366848
+    add r0 r1   0x00 00 00 01   1
+    jmp loop2   0xaa 00 00 05   -1442840571
+end:                10
+jmp pc          0x2a 00 0f 00   704646912
