@@ -233,7 +233,7 @@ registers = {
     'NIL': 255
 }
 
-debug = 1
+debug = 0
 lines = []
 lineinfo = []
 lineaddr = []
