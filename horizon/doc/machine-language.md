@@ -23,7 +23,7 @@ of Arg. 1: 0: Reg., 1: Imm16.
 Immediate values must be added using ALU operations, as only the second argument can ever be an immediate.
 To facilitate introducing larger immediates, ALU operations to concatenate values exist. Assembly language could make use of these instructions to abstract away MOVing larger immediates into registers, as MOV itself will be an abstraction built on ALU operations.
 
-Instructions with an asterisk (*) are not basic and may only be included in second iterations.
+Instructions with an asterisk (*) are marked as To-Do. They are not basic and may only be included in second iterations.
 
 With all this in mind, the possible instruction formats are:
 1. opcode
@@ -109,10 +109,10 @@ Value to store is a register or imm16 from arg. 1.
 
 - 0: store
 - 1: load
-- 2*: storei (store and increment AR)
-- 3*: loadi (load and increment AR)
-- 4*: stored (store and decrement AR)
-- 5*: loadd (load and decrement AR)
+- 2: storei (store and increment AR)
+- 3: loadi (load and increment AR)
+- 4: stored (store and decrement AR)
+- 5: loadd (load and decrement AR)
 
 ## Stack: 0x3
 Instruction formats: 1 (only return), 4, 5 (push, call)
@@ -125,8 +125,8 @@ instructions.
 
 - 8: push
 - 9: pop
-- a: call
-- b: return
+- a*: call (currently a macro: add lr pc #2, jmp #subroutine)
+- b*: return (currently a macro: jmp lr)
 
 ## Vector operations
 ### Registers

@@ -134,50 +134,54 @@ def generate_bp(program: list[int]) -> str:
 
 ## Opcodes
 opcodes = {
-    'ADD':   [0, 128],
-    'SUB':   [1, 129],
-    'MUL':   [2, 130],
-    'DIV':   [3, 131],
-    'MOD':   [4, 132],
-    'EXP':   [5, 133],
-    'SHL':   [6, 134],
-    'SHR':   [7, 135],
-    'AND':   [8, 136],
-    'OR':    [9, 137],
-    'NOT':   [10, 138],
-    'XOR':   [11, 139],
-    'BCAT':  [12, 140],
-    'HCAT':  [13, 141],
-    'ADDS':  [16, 144],
-    'SUBS':  [17, 145],
-    'MULS':  [18, 146],
-    'DIVS':  [19, 147],
-    'MODS':  [20, 148],
-    'EXPS':  [21, 149],
-    'LSHS':  [22, 150],
-    'RSHS':  [23, 151],
-    'ANDS':  [24, 152],
-    'ORS':   [25, 153],
-    'NOTS':  [26, 154],
-    'XORS':  [27, 155],
-    'BCATS': [28, 156],
-    'HCATS': [29, 157],
-    'JEQ':   [32, 160],
-    'JNE':   [33, 161],
-    'JLT':   [34, 162],
-    'JGT':   [35, 163],
-    'JLE':   [36, 164],
-    'JGE':   [37, 165],
-    'JNG':   [38, 166],
-    'JPZ':   [39, 167],
-    'JVS':   [40, 168],
-    'JVC':   [41, 169],
-    'JMP':   [42, 170],
-    'NOOP':  [43],
-    'STORE': [48, 176],
-    'LOAD':  [49],
-    'PUSH':  [56, 184],
-    'POP':   [57]
+    'ADD':    [0, 128],
+    'SUB':    [1, 129],
+    'MUL':    [2, 130],
+    'DIV':    [3, 131],
+    'MOD':    [4, 132],
+    'EXP':    [5, 133],
+    'LSH':    [6, 134],
+    'RSH':    [7, 135],
+    'AND':    [8, 136],
+    'OR':     [9, 137],
+    'NOT':    [10, 138],
+    'XOR':    [11, 139],
+    'BCAT':   [12, 140],
+    'HCAT':   [13, 141],
+    'ADDS':   [16, 144],
+    'SUBS':   [17, 145],
+    'MULS':   [18, 146],
+    'DIVS':   [19, 147],
+    'MODS':   [20, 148],
+    'EXPS':   [21, 149],
+    'LSHS':   [22, 150],
+    'RSHS':   [23, 151],
+    'ANDS':   [24, 152],
+    'ORS':    [25, 153],
+    'NOTS':   [26, 154],
+    'XORS':   [27, 155],
+    'BCATS':  [28, 156],
+    'HCATS':  [29, 157],
+    'JEQ':    [32, 160],
+    'JNE':    [33, 161],
+    'JLT':    [34, 162],
+    'JGT':    [35, 163],
+    'JLE':    [36, 164],
+    'JGE':    [37, 165],
+    'JNG':    [38, 166],
+    'JPZ':    [39, 167],
+    'JVS':    [40, 168],
+    'JVC':    [41, 169],
+    'JMP':    [42, 170],
+    'NOOP':   [43],
+    'STORE':  [48, 176],
+    'LOAD':   [49],
+    'STOREI': [50, 178],
+    'LOADI':  [51],
+    'STORED': [52, 180],
+    'LOADD':  [53],
+    'PUSH':   [56, 184],
+    'POP':    [57]
 }
 
 # Numbers must be replaced with the argument of that index
@@ -336,7 +340,7 @@ def instr_to_machine_code(c: list, i: int) -> list:
     
     # OP _ RN _
     # OP _ IMM16 _
-    if c[0] in ['JMP', 'JEQ', 'JNE', 'JLT', 'JGT', 'JLE', 'JGE', 'JNG', 'JPZ', 'JVS', 'JVC', 'PUSH', 'STORE']:
+    if c[0] in ['JMP', 'JEQ', 'JNE', 'JLT', 'JGT', 'JLE', 'JGE', 'JNG', 'JPZ', 'JVS', 'JVC', 'PUSH', 'STORE', 'STOREI', 'STORED']:
         # c = [OP, RN/IMM16]
         
         if len(c) < 2:
@@ -361,7 +365,7 @@ def instr_to_machine_code(c: list, i: int) -> list:
         return c
 
     # OP RD _ _
-    if c[0] in ['LOAD', 'POP']:
+    if c[0] in ['LOAD', 'POP', 'LOADI', 'LOADD']:
         # c = [OP, RD]
         
         if len(c) < 2:
@@ -623,6 +627,10 @@ if __name__ == '__main__':
         print(consts)
         print('## END FIRST PASS ##')
         print()
+        
+    if errors:
+        print(f'{errors} error{"s" if errors > 1 else ""} detected')
+        exit(0)
     
     ## Second pass
     # Jump to start

@@ -1,0 +1,36 @@
+.macro
+@const flush_buffer 4108
+@const flush_buffer_lo 0x0c
+@const flush_buffer_hi 0x10
+
+.program
+mov r0 #1
+mov ar #1   ; mov ar #4096
+lsh ar #12
+storei r0
+
+@rep 11
+lsh r0 #1
+add r0 #1
+storei r0
+@end
+
+mov r0 #1
+mov ar flush_buffer_hi   ; mov ar flush_buffer
+bcat ar flush_buffer_lo
+store r0
+store nil
+
+mov ar #1   ; mov ar #4096
+lsh ar #12
+@rep 12
+storei nil
+@end
+
+mov r0 #1
+mov ar flush_buffer_hi   ; mov ar flush_buffer
+bcat ar flush_buffer_lo
+store r0
+store nil
+
+reset
