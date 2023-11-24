@@ -7,12 +7,6 @@ Tools for creating program ROMs for my factorio CPUs. Hobby project
 'Overture' is the first architecture, with 8-bit instructions and a small assembly compiler. A few example
 programs are included.
 
-Compilers are run as follows:
-```
-python <compiler>.py <input file> <blueprint template file> <optional output file>
-```
-If the output file is ommitted, the resulting blueprint string is printed on `stdout`.
-
 `string-to-json.py` is a helper program that takes an input file containing a blueprint string and outputs the JSON representation in `out.json`.
 
 # Architectures
@@ -22,10 +16,24 @@ If the output file is ommitted, the resulting blueprint string is printed on `st
 
 Documentation in the `everest/doc` directory.
 
+Program compilation:
+```
+python <compiler>.py <input file> <blueprint template file> <optional output file>
+```
+If the output file is ommitted, the resulting blueprint string is printed on `stdout`.
+
 ## Horizon
 32-bit ISA of own design. Designed to improve upon Everest by simplifying the instruction set and its implementation, thereby speeding up the clock frequency possible.
 
+This design exists as Harvard and von Neumann versions. Harvard has shorter clock cycles, but von Neumann allows programs with data sections to define arrays.
+
 Documentation in the `horizon/doc` directory.
+
+Program compilation:
+```
+python <compiler>.py <input file> <optional output file>
+```
+If the output file is ommitted, the resulting blueprint string is printed on `stdout`.
 
 ## Overture
 8-bit ISA based on the "tutorial" architecture featured in the game "Turing Complete". The ALU operations have been replaced to suit Factorio better, but all other characteristics remain mostly the same.

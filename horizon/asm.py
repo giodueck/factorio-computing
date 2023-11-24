@@ -346,7 +346,8 @@ builtin_macros = {
     'CALL': [['ADD', 'LR', 'PC', '#2'], ['JMP', 1]],
     'RETURN': [['JMP', 'LR']],
     'MOV': [['ADD', 1, 'NIL', 2]],
-    'MOVS': [['ADDS', 1, 'NIL', 2]]
+    'MOVS': [['ADDS', 1, 'NIL', 2]],
+    'MOV16': [['PUSH', 2], ['POP', 1]]
 }
 
 preprocessor = [
@@ -832,16 +833,17 @@ if __name__ == '__main__':
         print('## END MID SECOND PASS ##')
         print()
     
-    ## Output
-    if errors:
-        print(f'{errors} error{"s" if errors > 1 else ""} detected')
-        exit(0)
-    
     # Convert instructions into machine code
     for i, instr in enumerate(machine_code):
         # print(instr)
         machine_code[i] = instr_to_machine_code(instr, i)
-        machine_code[i] = machine_code[i] - 2 * (machine_code[i] & (1 << 31))
+        if (not errors):
+            machine_code[i] = machine_code[i] - 2 * (machine_code[i] & (1 << 31))
+    
+    ## Output
+    if errors:
+        print(f'{errors} error{"s" if errors > 1 else ""} detected')
+        exit(0)
     
     if debug:
         print('## SECOND PASS ##')
