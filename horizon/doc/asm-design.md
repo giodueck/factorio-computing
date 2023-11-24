@@ -86,6 +86,7 @@ jmp beginning
 ```
 
 ### User-defined Macros
+**TO-DO**
 Defines are user-defined instructions which are replaced at assembly by a sequence of
 instructions, similarly to the C preprocessor.
 
@@ -109,6 +110,7 @@ As an example:
 ```
 
 ### Include
+**TO-DO**
 Files containing only `@const`, `@define` and other includes can be included using
 ```
 @include "filename"
@@ -148,14 +150,44 @@ Files may be split into data and program sections, with the following syntax.
 [instructions]
 ```
 
-Implicitly, the first section is assumed to be the program section, unless `.data` is specified. Data sections may only appear before any `.program` section, which itself
-contains instructions or macros.
+Implicitly, the first section is assumed to be the program section, unless `.data` is specified. Data
+sections may only appear before any `.program` section, which itself contains instructions or macros.
 
-A `.macro` section may also be declared before the program section to add any user-defined
-macros which can be used in the program section.
+<!-- A `.macro` section may also be declared before the program section to add any user-defined
+macros which can be used in the program section. -->
 
 A reserved label `start:` can be used to define the entry-point of a program for cases
 in which it is not the first instruction in the program section.
+
+## Data section
+The data section may contain named and initialized memory blocks. Unlike with instructions, all arguments
+must be numeric or `@const`ants and do not need to be prefixed with `#`. They can be in decimal, binary
+or hexadecimal using no prefix or `0b` and `0x` respectively.
+
+```
+identifier1 [initialization]
+identifier2 [initialization]
+```
+
+Initialization can be done in one of two ways, and the size of the memory block allocated is dependent on
+initialization.
+
+### Explicit initialization
+The values can be listed individually separated by commas or spaces. The number of items defines the size of
+the memory block.
+
+```
+identifier1 42
+identifier2 0xf00d, 0xbeef, 0b101010
+```
+
+### Uniform initialization
+To define a sequence of the same repeating number a more compact way to write it is using the `times` keyword.
+Here the first number is the size of the allocation, and the second is the value.
+
+```
+identifier times 5 0
+```
 
 ## Instructions
 For all instructions, `Rd`, `Rn` and `Rm` represent registers, `imm8` and `imm16` represent
@@ -195,16 +227,23 @@ Is implemented as a Macro, as its behavior is the same as
 `jmp #0`
 
 ### Move/Copy
-`mov[s] Rd Rn/imm16`\
+`mov[s] Rd Rn/imm8`\
 Copy a value into a register.
 
-For Rn or immediates that fit in a byte, the instruction is translated to\
+This instruction is translated to\
 `add[s] Rd NIL Rn/imm8`
 
-For bigger immediates, the instruction is translated to\
-`add Rd NIL imm16H`\
+For 16-bit immediates:\
+`mov16 Rd imm16`
+
+Which is translated to\
+`push imm16`\
+`pop Rd`
+
+For bigger immediates, the instruction can be built using\
+`mov16 Rd imm16H`\
 `bcat[s] Rd imm16L`\
-where `imm16H` and `imm16L` are the high and low bytes respectively.
+where `imm16H` and `imm16L` are the high and low halfwords respectively.
 
 ### Store
 `store Rn/imm16`\

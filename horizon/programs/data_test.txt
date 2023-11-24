@@ -1,0 +1,19 @@
+.data
+
+a 0xf
+b 42
+dud times 0 0
+array 1,2,3
+arrayz times 5 0
+
+.program
+mov ar array
+load r0
+jmp test2
+test:
+    jmp to_end
+test2:
+    jmp test
+
+to_end:
+halt

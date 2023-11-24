@@ -358,6 +358,10 @@ preprocessor = [
     'END'
 ]
 
+data_directives = [
+    'TIMES'
+]
+
 sections = [
     'DATA',
     'MACRO',
@@ -387,7 +391,7 @@ registers = {
 debug = 0
 lines = []
 lineinfo = []
-lineaddr = []
+
 labels = {}
 consts = {}
 errors = 0
@@ -398,6 +402,12 @@ repeat_line = 0
 code = []
 machine_code = []
 code_info = []
+
+# identifiers have an associated address and block size
+ids = []
+id_size = {}
+id_values = {}
+program_offset = 0
 
 
 def syntax_error(msg: str, i: int):
@@ -582,7 +592,7 @@ def repeat_block(c: list, i: int):
         return
     
     try:
-        n = int(c[1])
+        n = int(c[1], 0)
         if n < 0:
             raise ValueError
     except:
@@ -648,7 +658,60 @@ def repeat_block(c: list, i: int):
         for k, rk in enumerate(ri):
             interpret_instr(rk, k)
 
-    return
+def data_block(i: int):
+    # i is the starting line of code
+    ended = False
+    data_errors = 0
+    for index in range(i + 1, len(code)):
+        c = code[index]
+        # only breaks at end of section
+        if c[0][0] == '.':
+            ended = True
+            break
+        
+        # check if identifier is new and valid
+        name = c[0]
+        if name in opcodes or name in builtin_macros or name in preprocessor or name in data_directives or name in sections or name in registers:
+            syntax_error(f'data block name may not be a reserved word. Is the data section properly ended?', lineinfo[index])
+            data_errors += 1
+            continue
+        elif name in id_size:
+            syntax_error(f'data block name "{name}" declared more than once', lineinfo[index])
+            data_errors += 1
+            continue
+        
+        if len(c) < 2:
+            syntax_error(f'data block declaration cannot be empty', lineinfo[index])
+            data_errors += 1
+            continue
+        
+        ids.append(name)
+        id_size[name] = 0
+        id_values[name] = []
+        
+        # initializations
+        try:
+            
+            if c[1] == 'TIMES':
+                if len(c) != 4:
+                    syntax_error(f'"TIMES" expects two arguments, got {len(c) - 2}', lineinfo[index])
+                    data_errors += 1
+                    continue
+                id_size[name] = int(c[2], 0)
+                id_values[name] = [int(c[3], 0) for n in range(id_size[name])]
+            else:
+                for j in range(1, len(c)):
+                    id_values[name].append(int(c[j], 0))
+                    id_size[name] += 1
+                    
+        except ValueError:
+            syntax_error(f'expected numeric arguments', lineinfo[index])
+            data_errors += 1
+            continue
+    
+    if not ended:
+        syntax_error(f'data section not properly ended', lineinfo[i])
+
 
 if __name__ == '__main__':
     # arg 0 = program name
@@ -709,7 +772,7 @@ if __name__ == '__main__':
                     syntax_error(f'"{c[0]}" must be followed by an identifier and a value', lineinfo[i])
                     continue
                 else:
-                    if c[1] in opcodes or c[1] in builtin_macros or c[1] in preprocessor or c[1] in sections or c[1] in registers:
+                    if c[1] in opcodes or c[1] in builtin_macros or c[1] in preprocessor or c[1] in data_directives or c[1] in sections or c[1] in registers:
                         syntax_error(f'"{c[0]}" name may not be a reserved word', lineinfo[i])
                         continue
                     elif c[1] in consts:
@@ -734,18 +797,22 @@ if __name__ == '__main__':
             elif c[0][1:] == 'MACRO':
                 curr_section = 1
             elif c[0][1:] == 'DATA':
-                # TODO
                 curr_section = 2
-                syntax_error(f'"{c[0]}" is reserved but has not been implemented', lineinfo[i])
+                data_block(i)
                 continue
             else:
                 syntax_error(f'unkown section "{c[0]}"')
                 continue
         
+        # Data: Memory sections
+        elif curr_section == 2:
+            # like with @REP..@END, data directives are processed as a block, discard instructions until a different section is found
+            continue
+        
         # Labels
         elif c[0][-1] == ':' or len(c) > 1 and c[1] == ':':
             l = c[0].strip(':')
-            if l in opcodes or l in builtin_macros or l in preprocessor or l in sections or l in registers:
+            if l in opcodes or l in builtin_macros or l in preprocessor or l in data_directives or l in sections or l in registers:
                 syntax_error(f'label may not be a reserved word', lineinfo[i])
                 continue
             elif l in consts:
@@ -774,6 +841,8 @@ if __name__ == '__main__':
         for c in machine_code:
             print(c)
         print()
+        print(id_size)
+        print(id_values)
         print(labels)
         print(consts)
         print('## END FIRST PASS ##')
@@ -784,15 +853,22 @@ if __name__ == '__main__':
         exit(0)
     
     ## Second pass
-    # Jump to start
-    if 'START' in labels and labels['START'] != 0:
-        machine_code.insert(0, ['JMP', 'START'])
-        code_info.insert(0, 0)
-        for l in labels:
-            labels[l] += 1
+    # Add an address offset after the data section
+    for k, v in id_size.items():
+        program_offset += v
+    program_offset += 1 # for the JMP START instruction
     
-    # Data load instructions
-    # TODO
+    # Jump to start, with data sections this instruction is always inserted as the first word
+    # if 'START' in labels and labels['START'] != 0:
+        # machine_code.insert(0, ['JMP', 'START'])
+        # code_info.insert(0, 0)
+    
+    machine_code.insert(0, ['JMP', 'START'])
+    if 'START' not in labels:
+        labels['START'] = 0
+
+    for l in labels:
+        labels[l] += program_offset
     
     # Convert consts and labels into #constants
     for k in consts:
@@ -806,6 +882,17 @@ if __name__ == '__main__':
         machine_code[i] = [cg(op, op) for op in instr]
     for i, instr in enumerate(machine_code):
         machine_code[i] = [lg(op, op) for op in instr]
+        
+    # Convert named memory blocks into #constants
+    blocks = {}
+    block_addr = 1
+    for name in ids:
+        blocks[name] = '#' + str(block_addr)
+        block_addr += id_size[name]
+    
+    bg = blocks.get
+    for i, instr in enumerate(machine_code):
+        machine_code[i] = [bg(op, op) for op in instr]
     
     # Convert register names to numbers
     rg = registers.get
@@ -839,6 +926,13 @@ if __name__ == '__main__':
         machine_code[i] = instr_to_machine_code(instr, i)
         if (not errors):
             machine_code[i] = machine_code[i] - 2 * (machine_code[i] & (1 << 31))
+    
+    # Insert data
+    ins_idx = 1
+    for name in ids:
+        for v in id_values[name]:
+            machine_code.insert(ins_idx, v)
+            ins_idx += 1
     
     ## Output
     if errors:
