@@ -329,29 +329,25 @@ Compares the operands and updates the flags accordingly. The same as `subs` with
 as the destination register.
 
 ### Jumps
-`jmp Rn/imm16`\
 `j<c> Rn/imm16`
 
 Where `<c>` can be one of these entries.
 
 `<c>` | Description             | Flag condition
 ------|-------------------------|---------------
-`eq`  | Equal                   | (Z)
-`ne`  | Not equal               | (!Z)
-`lt`  | Less than               | (N != V)
-`gt`  | Greater than            | (!Z & N = V)
-`le`  | Less than or equal      | (Z & N != V)
-`ge`  | Greater than or equal   | (N = V)
-`ng`  | Negative                | (N)
-`pz`  | Positive or zero        | (!N)
-`vs`  | Overflow set            | (V)
-`vc`  | Overflow clear          | (!V)
-`al`  | Always                  | (always)
+`eq`  | Equal                   | Z
+`ne`  | Not equal               | !Z
+`lt`  | Less than               | N != V
+`gt`  | Greater than            | !Z & N == V
+`le`  | Less than or equal      | Z & N != V
+`ge`  | Greater than or equal   | N == V
+`ng`  | Negative                | N
+`pz`  | Positive or zero        | !N
+`vs`  | Overflow set            | V
+`vc`  | Overflow clear          | !V
+`mp`  | Always                  | (always)
 
-Jump to the instruction at the address denoted by `Rn/imm16`.\
-`jmp` is an inconditional jump, whereas `<c>` is a condition which checks the flags
-register. In order, they are '=', '!=', '<', '>', '<=', '>=' (all signed), negative,
-positive or zero, overflow, no overflow, and always.
+Jump to the instruction at the address denoted by `Rn/imm16`.
 
 ### Push
 `push Rn/imm16`\
