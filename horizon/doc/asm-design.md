@@ -16,13 +16,26 @@ a zero or when only the secondary effects of an instruction are desired.
 Addressing a non-existent register will cause the same behavior as `NIL` but is considered
 an error.
 
+## Memory layout
+Program instructions and data are all stored in RAM. The layout is as follows:
+
+0. `jmp start` instruction, automatically added to skip data section.
+1. Declared data section
+2. Program section, instructions
+3. Free memory
+
+The free memory space starting address depends on the previous sections, and is pointed to by
+the constant `ram_start`. A program can then work with offsets from this address.
+
+Memory is in no way protected, self modifying code, buffer overflows, and executing any memory
+address are all possible and are the responsibility of the programmer.
+
 ## General instruction syntax
 In general, instructions will be written as
 ```
     instruction result operand1 operand2
 ```
 with some variations for instructions which take less arguments, like jump or load.
-Instructions should, but don't have to, be indented.
 
 If the instruction takes a result and at least one operand, writing it like
 ```
@@ -61,6 +74,8 @@ Labels can be used wherever immediate values can, and are invoqued simply by the
 jmp label
 ```
 
+The `start` label is the entry point for a program, and by default is the first instruction.
+
 ## Comments
 Comments are ignored when assembling, and are denoted by `;`.
 Everything that follows a `;` is discarded on assembly, and can be used on an otherwise
@@ -74,8 +89,8 @@ jmp label  ; This is another one
 The blueprint label and description fields will be filled with text from the program comments
 according to the following rules:
 - The first comment to start with `;;` is taken to be the label
-- All comments and empty lines except for the label before the start of any section (e.g. an
-    instruction) are taken to be the description of the program
+- All comments and empty lines before the start of any section (e.g. an instruction), except
+    for the label, are taken to be the description of the program
 
 ## Preprocessor directives
 ### Constants

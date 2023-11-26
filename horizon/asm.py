@@ -397,6 +397,12 @@ registers = {
     'NIL': 255
 }
 
+other_reserved = {
+    'RAM_START'
+}
+
+reserved = []
+
 debug = 0
 lines = []
 lineinfo = []
@@ -685,7 +691,7 @@ def data_block(i: int):
         
         # check if identifier is new and valid
         name = c[0]
-        if name in opcodes or name in builtin_macros or name in preprocessor or name in data_directives or name in sections or name in registers:
+        if name in reserved:
             syntax_error(f'data block name may not be a reserved word. Is the data section properly ended?', lineinfo[index])
             data_errors += 1
             continue
@@ -725,6 +731,23 @@ def data_block(i: int):
     
     if not ended:
         syntax_error(f'data section not properly ended', lineinfo[i])
+
+def build_reserved():
+    reserved = []
+    for w in opcodes:
+        reserved.append(w)
+    for w in builtin_macros:
+        reserved.append(w)
+    for w in preprocessor:
+        reserved.append(w)
+    for w in data_directives:
+        reserved.append(w)
+    for w in sections:
+        reserved.append(w)
+    for w in registers:
+        reserved.append(w)
+    for w in other_reserved:
+        reserved.append(w)
 
 
 if __name__ == '__main__':
@@ -806,7 +829,7 @@ if __name__ == '__main__':
                     syntax_error(f'"{c[0]}" must be followed by an identifier and a value', lineinfo[i])
                     continue
                 else:
-                    if c[1] in opcodes or c[1] in builtin_macros or c[1] in preprocessor or c[1] in data_directives or c[1] in sections or c[1] in registers:
+                    if c[1] in reserved:
                         syntax_error(f'"{c[0]}" name may not be a reserved word', lineinfo[i])
                         continue
                     elif c[1] in consts:
@@ -846,7 +869,7 @@ if __name__ == '__main__':
         # Labels
         elif c[0][-1] == ':' or len(c) > 1 and c[1] == ':':
             l = c[0].strip(':')
-            if l in opcodes or l in builtin_macros or l in preprocessor or l in data_directives or l in sections or l in registers:
+            if l in reserved:
                 syntax_error(f'label may not be a reserved word', lineinfo[i])
                 continue
             elif l in consts:
@@ -900,6 +923,8 @@ if __name__ == '__main__':
     machine_code.insert(0, ['JMP', 'START'])
     if 'START' not in labels:
         labels['START'] = 0
+    
+    consts['RAM_START'] = len(machine_code) + sum([v for k, v in id_size.items()])
 
     for l in labels:
         labels[l] += program_offset

@@ -24,4 +24,5 @@ test2:
     jmp test
 
 to_end:
+mov r0 ram_start
 halt
