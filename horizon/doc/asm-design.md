@@ -70,6 +70,13 @@ empty line or following an instruction.
 jmp label  ; This is another one
 ```
 
+### Program Label and description
+The blueprint label and description fields will be filled with text from the program comments
+according to the following rules:
+- The first comment to start with `;;` is taken to be the label
+- All comments and empty lines except for the label before the start of any section (e.g. an
+    instruction) are taken to be the description of the program
+
 ## Preprocessor directives
 ### Constants
 Constants are similar to labels in that they represent an immediate value and can be
