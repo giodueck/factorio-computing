@@ -102,6 +102,8 @@ import sys
 # 32x64-value cell ROM, for loading into 64-value cell RAM module
 rom_bp_placeholder = lambda i: str((i + 10000) * 1000 + 123)
 rom_bp_capacity = 2048
+rom_bp_label = '64-value ROM'
+rom_bp_description = '64-value ROM with (i + 10000) * 1000 + 123 as a placeholder value for the ith word.\\n\\nFor programming with outside tools.'
 rom_bp_string = '0eNrNnd1uHVeSpV9F0NVMt1XY8R9hYC7mr8tTXV1V46nxzXTDoCXaIloiBYqy2yj43Sd5ZJTFTebJk7lXiuyLRlkWwyRPM'\
     'k4w4ltr/e35d28+nL+7vri8ef7l356/On//8vri3c3F1eXzL5+7vvjxbPrXz77+8788++ni5vWz/3Tx7B+fUZv+7z8/+4fD/7j9Z5ZnZ++'\
     'fnT179+bs5fnrqzevzq+fffzA76+un928Pn92+7E/XV2/+t2/Xv7r5T9Nf/ju+uqH67O3by8uf/hY+erDzfuLV+fPbq6u3rz/3fMvnl+8v'\
@@ -268,6 +270,13 @@ def generate_bp(program: list[int]) -> str:
     bin_string = base64.b64decode(bytes(b64_string, 'utf-8'))
 
     json = zlib.decompress(bin_string)
+    
+    # Add first comment starting with ;; as label in blueprint
+    json = json.replace(bytes('"label":"' + rom_bp_label + '"', 'utf-8'), bytes('"label":"' + bp_label_str + '"', 'utf-8'), 1)
+
+    # Add comments before valid keywords as description in blueprint
+    json = json.replace(bytes('"description":"' + rom_bp_description + '"', 'utf-8'), bytes('"description":"' + bp_desc_str + '"', 'utf-8'), 1)
+    
     t = str(json)[2:-1]
     
     for i in range(length):
@@ -408,6 +417,11 @@ ids = []
 id_size = {}
 id_values = {}
 program_offset = 0
+
+# Add first comment starting with ;; as label in blueprint
+bp_label_str = ''
+# Add comments before valid keywords as description in blueprint
+bp_desc_str = ''
 
 
 def syntax_error(msg: str, i: int):
@@ -725,11 +739,31 @@ if __name__ == '__main__':
     ## First pass
     # Read source lines into lines array
     with open(sys.argv[1], 'r') as fd:
-        lines = [l.strip().upper() for l in fd.readlines()]
+        lines = [l.strip() for l in fd.readlines()]
         lineinfo = [i + 1 for i in range(len(lines))]
     
+    # Add first comment starting with ;; as label in blueprint
+    bp_label = [l for l in lines if l[:2] == ';;']
+    if (len(bp_label) > 0):
+        bp_label_str = bp_label[0].strip("; ")
+    else:
+        bp_label_str = 'Compiled program'
+        
+    # Add comments before valid keywords as description in blueprint
+    bp_desc_str = ''
+    for l in lines:
+        if len(l) == 0:
+            continue
+        elif l[0] == ';':
+            if (l[:2] == ';;' and l.strip("; ") == bp_label_str):
+                continue
+            bp_desc_str += l.strip("; ") + '\n'
+        else:
+            break
+    bp_desc_str.strip('\n')
+    
     # Strip comments and empty lines, replace commas with spaces
-    lines = [line.split(';')[0].replace(',', ' ').strip() for line in lines]
+    lines = [line.split(';')[0].replace(',', ' ').strip().upper() for line in lines]
     
     indices = [i for i, l in enumerate(lines) if len(l) == 0]
     while len(indices):

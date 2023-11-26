@@ -1,3 +1,7 @@
+;; Data test
+; Tests the data section creation
+; Multiline description test
+
 .data
 
 a 0xf
@@ -8,7 +12,11 @@ arrayz times 5 0
 
 .program
 mov ar array
-load r0
+loadi r0
+@rep 2
+loadi r1
+add r0 r1
+@end
 jmp test2
 test:
     jmp to_end
