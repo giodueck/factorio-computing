@@ -218,11 +218,11 @@ For all instructions, `Rd`, `Rn` and `Rm` represent registers, `imm8` and `imm16
 #### The flag register
 The flags register is set by instructions which have the `s` suffix. The flags are
 
-Name | Bit | Description
------|-----|------------
-`Z`  |   0 | Result is zero
-`N`  |   1 | Result is negative
-`V`  |   2 | Overflow or underflow occurred
+Name | Description
+-----|------------
+`Z`  | Result is zero
+`N`  | Result is negative
+`V`  | Overflow or underflow occurred
 
 `V` is like the carry flag, but all operations are signed anyways so `C` is not needed.
 
@@ -244,8 +244,8 @@ Halt program execution by jumping to the same instruction, creating an infinite 
 Reset the program counter and stack pointer, stack and memory are kept the same since turning off power
 does not clear the contents of RW memory cells.
 
-Is implemented as a Macro, as its behavior is the same as
-`xor SP SP`
+Is implemented as a Macro, as its behavior is the same as\
+`xor SP SP`\
 `jmp #0`
 
 ### Move/Copy
@@ -269,11 +269,19 @@ where `imm16H` and `imm16L` are the high and low halfwords respectively.
 
 ### Store
 `store Rn/imm16`\
+`storei Rn/imm16`\
+`stored Rn/imm16`\
 Stores the value in `Rn/imm16` into the memory address stored in `AR`.
+
+Adding the `i` or `d` suffix causes `AR` to increment or decrement respectively
 
 ### Load
 `load Rd`\
+`loadi Rd`\
+`loadd Rd`\
 Loads the word stored in the memory address in `AR` into `Rd`.
+
+Adding the `i` or `d` suffix causes `AR` to increment or decrement respectively
 
 ### Add, Multiply, AND, OR, XOR, Subtract, Divide, Modulo, Exponentiation, Logical Shift Left, Arithmetic Shift Right, Byte concatenate, Halfword concatenate
 `<op>[s] Rd Rn Rm/imm8`\
@@ -324,18 +332,21 @@ as the destination register.
 `jmp Rn/imm16`\
 `j<c> Rn/imm16`
 
-Where `<c>` can be one of\
-`eq` (Z)\
-`ne` (!Z)\
-`lt` (N != V)\
-`gt` (!Z & N = V)\
-`le` (Z & N != V)\
-`ge` (N = V)\
-`ng` (N)\
-`pz` (!N)\
-`vs` (V)\
-`vc` (!V)\
-`al` (always)
+Where `<c>` can be one of these entries.
+
+`<c>` | Description             | Flag condition
+------|-------------------------|---------------
+`eq`  | Equal                   | (Z)
+`ne`  | Not equal               | (!Z)
+`lt`  | Less than               | (N != V)
+`gt`  | Greater than            | (!Z & N = V)
+`le`  | Less than or equal      | (Z & N != V)
+`ge`  | Greater than or equal   | (N = V)
+`ng`  | Negative                | (N)
+`pz`  | Positive or zero        | (!N)
+`vs`  | Overflow set            | (V)
+`vc`  | Overflow clear          | (!V)
+`al`  | Always                  | (always)
 
 Jump to the instruction at the address denoted by `Rn/imm16`.\
 `jmp` is an inconditional jump, whereas `<c>` is a condition which checks the flags
@@ -344,25 +355,28 @@ positive or zero, overflow, no overflow, and always.
 
 ### Push
 `push Rn/imm16`\
-Push a value to the stack. Uses and increments the `SP` register. If the stack is full
-the `SP` register still increments, but no more values are stored and `pop`ing will
-result in a `0` result.
+Push a value to the stack. Uses and increments the `SP` register.
+
+The stack is 256 words deep. If the stack is full the `SP` register still
+increments, but no more values are stored and `pop`ing will result in a `0` result.
 
 ### Pop
 `pop Rd`\
-Pop a value from the stack. Uses and decrements the `SP` register. If the stack is empty
-the `SP` register decrements into negative values and `pop`ed values are always 0, and
-`push`ing to a non-valid stack address will result in `SP` incrementing and the value
-to be discarded.
+Pop a value from the stack. Uses and decrements the `SP` register.
+
+If the stack is empty the `SP` register decrements into negative values and `pop`ed
+values are always 0, and `push`ing to a non-valid stack address will result in `SP`
+incrementing and the value to be discarded.
 
 ### Call
 `call Rd/imm16`\
 Jump to the address denoted by `Rd/imm16` and store the address of the next instruction
 in the `LR` register.
 
-The registers `R0`-`R3` and `R12` are free to use inside a call and are the arguments. Additional
-arguments are loaded on the stack. `R4`-`R11` are variable registers and their value
-must be the same on return as on call.
+The registers `R0`-`R3` and `AR` are free to use inside a call and are the arguments.
+Additional arguments are loaded on the stack. `R4`-`R11` are variable registers and the
+value in these and in the `LR` must be the same on return as on call. To use these
+registers, first push them to the stack, then pop them back before returning.
 
 `R0` is also the return value of a call.
 
