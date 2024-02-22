@@ -270,15 +270,15 @@ def generate_bp(program: list[int]) -> str:
     bin_string = base64.b64decode(bytes(b64_string, 'utf-8'))
 
     json = zlib.decompress(bin_string)
-    
+
     # Add first comment starting with ;; as label in blueprint
     json = json.replace(bytes('"label":"' + rom_bp_label + '"', 'utf-8'), bytes('"label":"' + bp_label_str + '"', 'utf-8'), 1)
 
     # Add comments before valid keywords as description in blueprint
     json = json.replace(bytes('"description":"' + rom_bp_description + '"', 'utf-8'), bytes('"description":"' + bp_desc_str + '"', 'utf-8'), 1)
-    
+
     t = str(json)[2:-1]
-    
+
     for i in range(length):
         if type(rom_bp_placeholder) == str:
             t = t.replace(rom_bp_placeholder, str(program[i]), 1)
@@ -440,42 +440,42 @@ def lexical_error(msg: str, i: int, hint_label: bool = False):
     else:
         print(f'Malformed label on line {i}: {msg}')
     global errors; errors += 1
-    
+
 def instr_to_machine_code(c: list, i: int) -> list:
     if c[0] in ['NOOP']:
         c = opcodes[c[0]][0] << 24
         return c
-    
+
     # Comments show byte order of operands, for IMM16 the blank byte immediately to the back or front (when the last byte is not blank)
     #   is the LSB or MSB respectively
     # RN is the first register operand
     # RM is the second register operand
     # RD is the destination register, and synonymous with RN where RN is ommitted
     # IMM8 and IMM16 are immediate values of 8 and 16 bits respectively
-    
+
     # OP RD RN RM
     # OP RD RN IMM8
     if c[0] in ['ADD', 'MUL', 'AND', 'ORR', 'XOR', 'ADDS', 'MULS', 'ANDS', 'ORRS', 'XORS', 'SUB', 'DIV', 'MOD', 'EXP', 'LSH', 'RSH', 'SUBS', 'DIVS', 'MODS', 'EXPS', 'LSHS', 'RSHS', 'BCAT', 'HCAT', 'BCATS', 'HCATS']:
         # RN = RD
         if len(c) < 4:
             c.insert(1, c[1])
-        
+
         # c = [OP, RD, RN, RM/IMM8]
-        
+
         if len(c) < 4:
             syntax_error(f'too few arguments', code_info[i])
             return c
         elif len(c) > 4:
             syntax_error(f'too many arguments', code_info[i])
             return c
-        
+
         if type(c[1]) != int:
             syntax_error('expected register as destination', code_info[i])
             return c
         if type(c[2]) != int:
             syntax_error('expected register as first operand', code_info[i])
             return c
-        
+
         if type(c[3]) == int:
             t = 0
         else:
@@ -484,53 +484,53 @@ def instr_to_machine_code(c: list, i: int) -> list:
             if c[3] < -128 or c[3] > 127:
                 syntax_error(f'literal "#{c[2]}" out of range [-128, 127]', code_info[i])
                 return c
-        
+
         c[0] = opcodes[c[0]][t]
-        
+
         c = c[0] << 24 | c[1] << 16 | c[2] << 8 | c[3] & 0xFF
         return c
-    
+
     # OP RD RN _
     if c[0] in ['NOT', 'NOTS']:
         # RN = RD
         if len(c) < 3:
             c.insert(1, c[1])
-        
+
         # c = [OP, RD, RN, RM/IMM8]
-        
+
         if len(c) < 3:
             syntax_error(f'too few arguments', code_info[i])
             return c
         elif len(c) > 3:
             syntax_error(f'too many arguments', code_info[i])
             return c
-        
+
         if type(c[1]) != int:
             syntax_error('expected register as destination', code_info[i])
             return c
         if type(c[2]) != int:
             syntax_error('expected register as operand', code_info[i])
             return c
-        
+
         t = 0
-        
+
         c[0] = opcodes[c[0]][t]
-        
+
         c = c[0] << 24 | c[1] << 16 | c[2] << 8
         return c
-    
+
     # OP _ RN _
     # OP _ IMM16 _
     if c[0] in ['JMP', 'JEQ', 'JNE', 'JLT', 'JGT', 'JLE', 'JGE', 'JNG', 'JPZ', 'JVS', 'JVC', 'PUSH', 'STORE', 'STOREI', 'STORED']:
         # c = [OP, RN/IMM16]
-        
+
         if len(c) < 2:
             syntax_error(f'too few arguments', code_info[i])
             return c
         elif len(c) > 2:
             syntax_error(f'too many arguments', code_info[i])
             return c
-    
+
         if type(c[1]) == int:
             t = 0
         else:
@@ -539,16 +539,16 @@ def instr_to_machine_code(c: list, i: int) -> list:
             if c[1] < -32768 or c[1] > 32767:
                 syntax_error(f'literal "#{c[1]}" out of range [-32768, 32767]', code_info[i])
                 return c
-        
+
         c[0] = opcodes[c[0]][t]
-        
+
         c = c[0] << 24 | (c[1] << 8 if t == 0 else c[1] & 0xFFFF)
         return c
 
     # OP RD _ _
     if c[0] in ['LOAD', 'POP', 'LOADI', 'LOADD']:
         # c = [OP, RD]
-        
+
         if len(c) < 2:
             syntax_error(f'too few arguments', code_info[i])
             return c
@@ -559,26 +559,26 @@ def instr_to_machine_code(c: list, i: int) -> list:
         if type(c[1]) != int:
             syntax_error('expected register as destination', code_info[i])
             return c
-        
+
         c[0] = opcodes[c[0]][0]
-        
+
         c = c[0] << 24 | c[1] << 16
         return c
-    
+
     return c
 
 def macro_to_instr(c: list):
     o = c[0]
     out = []
-    
+
     for i in builtin_macros[o]:
         ins = i.copy()
         for j, a in enumerate(ins):
             if type(a) == int:
                 ins[j] = c[a]
-                
+
         out.append(ins)
-    
+
     return out
 
 def interpret_instr(c: list, i: int):
@@ -589,7 +589,7 @@ def interpret_instr(c: list, i: int):
             return
         machine_code.append(c)
         code_info.append(lineinfo[i])
-    
+
     # Built-in macro instructions
     elif c[0] in builtin_macros:
         if curr_section != 0:
@@ -610,7 +610,7 @@ def repeat_block(c: list, i: int):
     if len(c) > 2:
         syntax_error(f'"{c[0]}" takes only one non-negative integer as an argument', lineinfo[i])
         return
-    
+
     try:
         n = int(c[1], 0)
         if n < 0:
@@ -618,7 +618,7 @@ def repeat_block(c: list, i: int):
     except:
         syntax_error(f'"{c[0]}" must be followed by a non-negative integer', lineinfo[i])
         return
-    
+
     # Get code until END is found
     r = []
     ended = 0
@@ -627,12 +627,12 @@ def repeat_block(c: list, i: int):
         if code[j][0] == '@END':
             ended = 1
             break
-        
+
         # @{s, i} blocks are counters: s=start value, i=increment value
         len_counters = -1
         while len_counters < len(counters):
             len_counters = len(counters)
-            
+
             for k, a in enumerate(code[j]):
                 k_ = 0
                 s_, i_ = 0, 0
@@ -643,15 +643,15 @@ def repeat_block(c: list, i: int):
                         k_ += 1
                         s_ = int(code[j][k + k_])
                     k_ += 1
-                
+
                     if code[j][k + k_].endswith('}'):
                         i_ = int(code[j][k + k_][:-1])
                     else:
                         i_ = int(code[j][k + k_])
                         k_ += 1
-                    
+
                     counters.append((s_, i_))
-            
+
                     # remove counter block and replace with string format ('{i}') placeholder
                     while k_ >= 0:
                         code[j].pop(k + k_)
@@ -659,11 +659,11 @@ def repeat_block(c: list, i: int):
                     code[j].insert(k, f'({len(counters) - 1})')
 
         r.append(code[j])
-        
+
     if not ended:
         # This error will be detected while parsing the rest of the code inside the first pass
         return
-    
+
     for j in range(n):
         ri = [e.copy() for e in r]
         for k, rk in enumerate(r):
@@ -688,7 +688,7 @@ def data_block(i: int):
         if c[0][0] == '.':
             ended = True
             break
-        
+
         # check if identifier is new and valid
         name = c[0]
         if name in reserved:
@@ -699,19 +699,19 @@ def data_block(i: int):
             syntax_error(f'data block name "{name}" declared more than once', lineinfo[index])
             data_errors += 1
             continue
-        
+
         if len(c) < 2:
             syntax_error(f'data block declaration cannot be empty', lineinfo[index])
             data_errors += 1
             continue
-        
+
         ids.append(name)
         id_size[name] = 0
         id_values[name] = []
-        
+
         # initializations
         try:
-            
+
             if c[1] == 'TIMES':
                 if len(c) != 4:
                     syntax_error(f'"TIMES" expects two arguments, got {len(c) - 2}', lineinfo[index])
@@ -723,12 +723,12 @@ def data_block(i: int):
                 for j in range(1, len(c)):
                     id_values[name].append(int(c[j], 0))
                     id_size[name] += 1
-                    
+
         except ValueError:
             syntax_error(f'expected numeric arguments', lineinfo[index])
             data_errors += 1
             continue
-    
+
     if not ended:
         syntax_error(f'data section not properly ended', lineinfo[i])
 
@@ -754,24 +754,24 @@ if __name__ == '__main__':
     # arg 0 = program name
     # arg 1 = input
     # arg 2 = output filename (default print to stdout)
-    
+
     if len(sys.argv) not in (2, 3):
         print(f"Usage: python {sys.argv[0]} <input_file> <optional_ouput_file>")
         exit(1)
-    
+
     ## First pass
     # Read source lines into lines array
     with open(sys.argv[1], 'r') as fd:
         lines = [l.strip() for l in fd.readlines()]
         lineinfo = [i + 1 for i in range(len(lines))]
-    
+
     # Add first comment starting with ;; as label in blueprint
     bp_label = [l for l in lines if l[:2] == ';;']
     if (len(bp_label) > 0):
         bp_label_str = bp_label[0].strip("; ")
     else:
         bp_label_str = 'Compiled program'
-        
+
     # Add comments before valid keywords as description in blueprint
     bp_desc_str = ''
     for l in lines:
@@ -784,29 +784,29 @@ if __name__ == '__main__':
         else:
             break
     bp_desc_str.strip('\n')
-    
+
     # Strip comments and empty lines, replace commas with spaces
     lines = [line.split(';')[0].replace(',', ' ').strip().upper() for line in lines]
-    
+
     indices = [i for i, l in enumerate(lines) if len(l) == 0]
     while len(indices):
         lineinfo.pop(indices[-1])
         lines.pop(indices[-1])
         indices.pop()
-    
+
     # Split lines into tokens
     code = [l.split() for l in lines]
-    
+
     # Identify tokens and translate
     errors = 0
     for i, c in enumerate(code):
-        
+
         # REP..END blocks are interpreted when REP is found, discard instructions until END is found
         if repeat:
             if c[0] == '@END':
                 repeat = 0
             continue
-        
+
         # Preprocessor directives
         if c[0][0] == '@' and c[0][1:] in preprocessor:
             if c[0] == '@REP':
@@ -820,7 +820,7 @@ if __name__ == '__main__':
             elif c[0] == '@END':
                 syntax_error(f'"{c[0]}" without a corresponding "@REP"', lineinfo[i])
                 continue
-            
+
             if curr_section != 1:
                 syntax_error('preprocessor directives not allowed outside ".MACRO" section, except "@REP"', lineinfo[i])
                 continue
@@ -842,7 +842,7 @@ if __name__ == '__main__':
             else:
                 syntax_error(f'unkown preprocessor directive "{c[0]}"')
                 continue
-            
+
         # Sections
         elif c[0][0] == '.' and c[0][1:] in sections:
             if program_reached:
@@ -860,12 +860,12 @@ if __name__ == '__main__':
             else:
                 syntax_error(f'unkown section "{c[0]}"')
                 continue
-        
+
         # Data: Memory sections
         elif curr_section == 2:
             # like with @REP..@END, data directives are processed as a block, discard instructions until a different section is found
             continue
-        
+
         # Labels
         elif c[0][-1] == ':' or len(c) > 1 and c[1] == ':':
             l = c[0].strip(':')
@@ -878,21 +878,21 @@ if __name__ == '__main__':
             elif l in labels:
                 syntax_error(f'"{l}" defined multiple times', lineinfo[i])
                 continue
-            
+
             labels[l] = len(machine_code)
-        
+
         # Instructions and Built-in macros
         elif c[0] in opcodes or c[0] in builtin_macros:
             interpret_instr(c, i)
             program_reached = 1
-            
+
         # Everything not picked up is a lexical error, hint at labels ending in ':'
         else:
             lexical_error(c[0], lineinfo[i], True)
-    
+
     if repeat:
         syntax_error('"@REP" without a corresponding "@END"', repeat_line)
-    
+
     if debug:
         print('## FIRST PASS ##')
         for c in machine_code:
@@ -904,60 +904,60 @@ if __name__ == '__main__':
         print(consts)
         print('## END FIRST PASS ##')
         print()
-        
+
     if errors:
         print(f'{errors} error{"s" if errors > 1 else ""} detected')
         exit(0)
-    
+
     ## Second pass
     # Add an address offset after the data section
     for k, v in id_size.items():
         program_offset += v
     program_offset += 1 # for the JMP START instruction
-    
+
     # Jump to start, with data sections this instruction is always inserted as the first word
     # if 'START' in labels and labels['START'] != 0:
         # machine_code.insert(0, ['JMP', 'START'])
         # code_info.insert(0, 0)
-    
+
     machine_code.insert(0, ['JMP', 'START'])
     if 'START' not in labels:
         labels['START'] = 0
-    
+
     consts['RAM_START'] = len(machine_code) + sum([v for k, v in id_size.items()])
 
     for l in labels:
         labels[l] += program_offset
-    
+
     # Convert consts and labels into #constants
     for k in consts:
         consts[k] = '#' + str(consts[k])
     for k in labels:
         labels[k] = '#' + str(labels[k])
-    
+
     cg = consts.get
     lg = labels.get
     for i, instr in enumerate(machine_code):
         machine_code[i] = [cg(op, op) for op in instr]
     for i, instr in enumerate(machine_code):
         machine_code[i] = [lg(op, op) for op in instr]
-        
+
     # Convert named memory blocks into #constants
     blocks = {}
     block_addr = 1
     for name in ids:
         blocks[name] = '#' + str(block_addr)
         block_addr += id_size[name]
-    
+
     bg = blocks.get
     for i, instr in enumerate(machine_code):
         machine_code[i] = [bg(op, op) for op in instr]
-    
+
     # Convert register names to numbers
     rg = registers.get
     for i, instr in enumerate(machine_code):
         machine_code[i] = [rg(op, op) for op in instr]
-    
+
     # All leftover strings should be literals starting with '#'
     e = []
     for i, instr in enumerate(machine_code):
@@ -968,7 +968,7 @@ if __name__ == '__main__':
             syntax_error(f'number literals must start with "#"', code_info[i])
         except:
             lexical_error(tok, code_info[i])
-    
+
     if debug:
         print('## MID SECOND PASS ##')
         for c in machine_code:
@@ -978,35 +978,35 @@ if __name__ == '__main__':
         print(consts)
         print('## END MID SECOND PASS ##')
         print()
-    
+
     # Convert instructions into machine code
     for i, instr in enumerate(machine_code):
         # print(instr)
         machine_code[i] = instr_to_machine_code(instr, i)
         if (not errors):
             machine_code[i] = machine_code[i] - 2 * (machine_code[i] & (1 << 31))
-    
+
     # Insert data
     ins_idx = 1
     for name in ids:
         for v in id_values[name]:
             machine_code.insert(ins_idx, v)
             ins_idx += 1
-    
+
     ## Output
     if errors:
         print(f'{errors} error{"s" if errors > 1 else ""} detected')
         exit(0)
-    
+
     if debug:
         print('## SECOND PASS ##')
         for c in machine_code:
             print(c)
         print('## END SECOND PASS ##')
-    
+
     ## Third pass
     bp = generate_bp(machine_code)
-    
+
     if len(sys.argv) == 3:
         with open(sys.argv[2], 'w') as fd:
             fd.write(bp)
