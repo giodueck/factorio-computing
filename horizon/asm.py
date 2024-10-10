@@ -858,7 +858,7 @@ if __name__ == '__main__':
                 data_block(i)
                 continue
             else:
-                syntax_error(f'unkown section "{c[0]}"')
+                syntax_error(f'unknown section "{c[0]}"')
                 continue
 
         # Data: Memory sections

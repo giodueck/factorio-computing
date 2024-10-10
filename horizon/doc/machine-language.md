@@ -23,7 +23,7 @@ of Arg. 1: 0: Reg., 1: Imm16.
 Immediate values must be added using ALU operations, as only the second argument can ever be an immediate.
 To facilitate introducing larger immediates, ALU operations to concatenate values exist. Assembly language could make use of these instructions to abstract away MOVing larger immediates into registers, as MOV itself will be an abstraction built on ALU operations.
 
-Instructions with an asterisk (*) are marked as To-Do. They are not basic and may only be included in second iterations.
+Instructions with an asterisk (\*) are marked as To-Do. They are not basic and may only be included in second iterations.
 
 With all this in mind, the possible instruction formats are:
 1. opcode
@@ -81,8 +81,8 @@ Instruction formats: 2, 3, 4 (only not)
 - 9: ors
 - a: nots
 - b: xors
-- c: bcat
-- d: hcat
+- c: bcats
+- d: hcats
 
 ## COND Operations: 0x2
 Instruction formats: 1 (only noop), 4, 5
@@ -125,8 +125,8 @@ instructions.
 
 - 8: push
 - 9: pop
-- a*: call (currently a macro: add lr pc #2, jmp #subroutine)
-- b*: return (currently a macro: jmp lr)
+- a\*: call (currently a macro: add lr pc #2, jmp \#subroutine)
+- b\*: return (currently a macro: jmp lr)
 
 ## Vector operations
 ### Registers
@@ -141,32 +141,32 @@ Vx and Ux registers can be written like any other register, and Tx and Sx can be
 one function only. Vx and Ux are write-only and Tx and Sx are read-only for non-vector instructions.
 
 ### Vector ALU operations (result T): 0x4
-- 0*: vtadd
-- 1*: vtsub
-- 2*: vtmul
-- 3*: vtdiv
-- 4*: vtmod
-- 5*: vtexp
-- 6*: vtlsh
-- 7*: vtrsh
-- 8*: vtand
-- 9*: vtor
-- a*: vtnot
-- b*: vtxor
+- 0\*: vtadd
+- 1\*: vtsub
+- 2\*: vtmul
+- 3\*: vtdiv
+- 4\*: vtmod
+- 5\*: vtexp
+- 6\*: vtlsh
+- 7\*: vtrsh
+- 8\*: vtand
+- 9\*: vtor
+- a\*: vtnot
+- b\*: vtxor
 
 ### Vector ALU operations (result S): 0x5
-- 0*: vsadd
-- 1*: vssub
-- 2*: vsmul
-- 3*: vsdiv
-- 4*: vsmod
-- 5*: vsexp
-- 6*: vslsh
-- 7*: vsrsh
-- 8*: vsand
-- 9*: vsor
-- a*: vsnot
-- b*: vsxor
+- 0\*: vsadd
+- 1\*: vssub
+- 2\*: vsmul
+- 3\*: vsdiv
+- 4\*: vsmod
+- 5\*: vsexp
+- 6\*: vslsh
+- 7\*: vsrsh
+- 8\*: vsand
+- 9\*: vsor
+- a\*: vsnot
+- b\*: vsxor
 
 ### Vector register access: 0x6
 - 0: movtv (move registers Tx to Vx)
